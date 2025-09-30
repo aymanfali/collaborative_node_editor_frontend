@@ -5,9 +5,10 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
+import { io } from "socket.io-client";
 
 const props = defineProps({
     modelValue: {
@@ -15,39 +16,61 @@ const props = defineProps({
         default: "",
     },
 });
+const emit = defineEmits(["update:modelValue"]);
 
 const editor = ref(null);
 let quill = null;
+let socket = null;
 
 const toolbarOptions = [
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-    [{ 'font': [] }],
-    [{ 'size': [] }],
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
-    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-    ['link', 'image', 'formula', 'blockquote', 'code-block'],
-    [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
-    [{ 'align': [] }],
-    [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
-    [{ 'direction': 'rtl' }],                         // text direction
-    ['clean']                                         // remove formatting button
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    [{ font: [] }],
+    [{ size: [] }],
+    [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+    ["bold", "italic", "underline", "strike"],
+    [{ color: [] }, { background: [] }],
+    ["link", "image", "formula", "blockquote", "code-block"],
+    [{ script: "sub" }, { script: "super" }],
+    [{ align: [] }],
+    [{ indent: "-1" }, { indent: "+1" }],
+    [{ direction: "rtl" }],
+    ["clean"],
 ];
 
 onMounted(() => {
     quill = new Quill(editor.value, {
-        modules: {
-            toolbar: toolbarOptions
-        },
+        modules: { toolbar: toolbarOptions },
         theme: "snow",
     });
 
-    quill.root.innerHTML = props.modelValue;
+    // Load initial content
+    if (props.modelValue) {
+        quill.clipboard.dangerouslyPasteHTML(props.modelValue);
+    }
 
-    // Emit changes
-    quill.on("text-change", () => {
-        const html = quill.getText().trim() ? quill.root.innerHTML : "";
-        emit("update:modelValue", html);
+    // init socket
+    socket = io("http://localhost:3000");
+
+    // Local -> emit
+    quill.on("text-change", (delta, oldDelta, source) => {
+        if (source === "user") {
+            const html = quill.root.innerHTML;
+            emit("update:modelValue", html);
+
+            // send delta to server
+            socket.emit("editor-changes", delta);
+        }
     });
+
+    // Remote -> apply
+    socket.on("editor-changes", (delta) => {
+        quill.updateContents(delta);
+    });
+});
+
+onUnmounted(() => {
+    if (socket) {
+        socket.disconnect();
+    }
 });
 </script>
