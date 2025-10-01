@@ -1,11 +1,3 @@
-<script setup>
-import TextEditor from './components/TextEditor.vue';
-
-
-</script>
-
 <template>
-  <TextEditor />
+  <router-view></router-view>
 </template>
-
-<style scoped></style>
