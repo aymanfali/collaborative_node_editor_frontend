@@ -1,26 +1,27 @@
 <template>
-    <div class="container mx-auto p-4">
-        <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold mb-4">Create New Note</h1>
-            <button @click="goBack" class="bg-gray-500 text-white px-4 py-2 rounded">
-                Back to Notes
-            </button>
+    <NotesLayout>
+        <div class="notes-container">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-2xl font-bold">Create New Note</h1>
+                <button @click="goBack" class="bg-gray-500 text-white px-4 py-2 rounded">Back to Notes</button>
+            </div>
+
+            <div class="flex gap-3 mb-4">
+                <input v-model="title" type="text" placeholder="Note Title" class="border p-2 rounded w-full" />
+                <button @click="saveNote" class="bg-blue-500 text-white px-4 py-2 rounded" :disabled="!title.trim()">
+                    Save
+                </button>
+            </div>
+
+            <TextEditor v-model="content" />
+
+            <div v-if="loading" class="mt-2 text-gray-500">Saving...</div>
         </div>
-
-        <div class="flex gap-3 m-4">
-            <input v-model="title" type="text" placeholder="Note Title" class="border p-2 rounded w-full mb-2" />
-            <button @click="saveNote" class="bg-blue-500 text-white px-4 py-2 rounded" :disabled="!title.trim()">
-                Save Note
-            </button>
-        </div>
-
-        <TextEditor v-model="content" />
-
-        <div v-if="loading" class="mt-2 text-gray-500">Saving...</div>
-    </div>
+    </NotesLayout>
 </template>
 
 <script setup>
+import NotesLayout from '@/layouts/NotesLayout.vue';
 import { ref } from "vue";
 import TextEditor from "../../components/TextEditor.vue";
 import api from "../../services/api";

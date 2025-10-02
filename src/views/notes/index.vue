@@ -1,31 +1,31 @@
 <template>
-    <div class="container mx-auto p-4">
-        <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold mb-4">Your Notes</h1>
-            <button @click="goToCreate" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                Create New Note
-            </button>
-        </div>
+    <NotesLayout>
+        <div class="notes-container">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-2xl font-bold">Your Notes</h1>
+                <button @click="goToCreate" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    Create New Note
+                </button>
+            </div>
 
-        <div v-if="loading">Loading notes...</div>
-        <div v-else-if="error" class="text-red-500">{{ error }}</div>
-        <div v-else-if="notes.length === 0" class="text-gray-500 italic">
-            No notes yet. Create your first one above!
-        </div>
+            <div v-if="loading" class="text-gray-600">Loading notes...</div>
+            <div v-else-if="error" class="text-red-500">{{ error }}</div>
+            <div v-else-if="notes.length === 0" class="text-gray-500 italic">No notes yet. Create your first one above!</div>
 
-        <ul class="space-y-2">
-            <li v-for="note in notes" :key="note._id" class="p-3 border rounded flex justify-between items-center">
-                <router-link v-if="note?._id" :to="{ name: 'note-show', params: { id: note._id } }"
-                    class="text-blue-600 font-semibold">
-                    {{ note.title }}
-                </router-link>
-                <button @click="deleteNote(note._id)" class="text-red-500">Delete</button>
-            </li>
-        </ul>
-    </div>
+            <ul class="space-y-2">
+                <li v-for="note in notes" :key="note._id" class="p-3 border rounded flex justify-between items-center bg-white">
+                    <router-link v-if="note?._id" :to="{ name: 'note-show', params: { id: note._id } }" class="text-blue-600 font-semibold">
+                        {{ note.title }}
+                    </router-link>
+                    <button @click="deleteNote(note._id)" class="text-red-500">Delete</button>
+                </li>
+            </ul>
+        </div>
+    </NotesLayout>
 </template>
 
 <script setup>
+import NotesLayout from '@/layouts/NotesLayout.vue';
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "../../services/api";
