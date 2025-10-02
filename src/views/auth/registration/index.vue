@@ -78,6 +78,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import { register, googleLogin as googleAuthLogin } from '../../../services/auth';
+import api from '@/services/api.js';
 import { useRouter } from 'vue-router';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -110,10 +111,23 @@ const handleRegister = async () => {
     errorMessage.value = '';
     try {
         const { data } = await register({ name: name.value, email: email.value, password: password.value });
-        localStorage.setItem('accessToken', data.data.accessToken);
-        localStorage.setItem('activeUser', JSON.stringify(data.data.user));
+        // Save token from response if present
+        if (data?.data?.accessToken) {
+            localStorage.setItem('accessToken', data.data.accessToken);
+        }
+        // Fetch current user using token or cookies and persist
+        try {
+            const me = await api.get('/auth/me', {
+                headers: data?.data?.accessToken ? { Authorization: `Bearer ${data.data.accessToken}` } : undefined,
+            });
+            if (me.data?.data) {
+                localStorage.setItem('activeUser', JSON.stringify(me.data.data));
+            }
+        } catch (_) {
+            // ignore; user still has token
+        }
         toast.success('Registered successfully');
-        router.push('/dashboard');
+        router.push('/');
     } catch (err) {
         errorMessage.value = err.response?.data?.message || 'Registration failed';
         toast.error(errorMessage.value);

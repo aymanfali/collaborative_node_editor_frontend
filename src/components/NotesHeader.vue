@@ -33,6 +33,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/services/api.js';
+import { useToast } from 'vue-toastification';
 
 const emit = defineEmits(['toggle-nav']);
 
@@ -41,6 +42,7 @@ const userAvatar = ref('');
 const isLoggedIn = ref(false);
 const router = useRouter();
 const userInitial = computed(() => (userName.value?.trim()?.charAt(0)?.toUpperCase() || '?'));
+const toast = useToast();
 
 onMounted(async () => {
   try {
@@ -61,6 +63,7 @@ onMounted(async () => {
           userName.value = fetchedUser.name || '';
           userAvatar.value = fetchedUser.avatar || '';
           isLoggedIn.value = true;
+          toast.success('Logged in successfully');
           return;
         }
       } catch (_) {
@@ -78,6 +81,7 @@ onMounted(async () => {
             userName.value = fetchedUser.name || '';
             userAvatar.value = fetchedUser.avatar || '';
             isLoggedIn.value = true;
+            toast.success('Logged in successfully');
           }
         } catch (_) {
           isLoggedIn.value = false;
@@ -99,6 +103,7 @@ function handleLogout() {
     localStorage.removeItem('accessToken');
   } finally {
     isLoggedIn.value = false;
+    toast.success('Logged out successfully');
     router.push('/login');
   }
 }

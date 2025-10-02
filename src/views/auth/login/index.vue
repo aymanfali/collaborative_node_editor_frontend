@@ -67,6 +67,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useToast } from 'vue-toastification';
 import { login, googleLogin as googleAuthLogin } from '../../../services/auth';
+import api from '@/services/api.js';
 import { useRouter } from 'vue-router';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -99,11 +100,24 @@ const handleLogin = async () => {
     errorMessage.value = '';
     try {
         const { data } = await login({ email: email.value, password: password.value });
-        localStorage.setItem('accessToken', data.data.accessToken);
-        localStorage.setItem('activeUser', JSON.stringify(data.data.user));
+        // Save token from response
+        if (data?.data?.accessToken) {
+            localStorage.setItem('accessToken', data.data.accessToken);
+        }
         localStorage.setItem('lastEmail', email.value);
+        // Fetch current user and persist
+        try {
+            const me = await api.get('/auth/me', {
+                headers: data?.data?.accessToken ? { Authorization: `Bearer ${data.data.accessToken}` } : undefined,
+            });
+            if (me.data?.data) {
+                localStorage.setItem('activeUser', JSON.stringify(me.data.data));
+            }
+        } catch (_) {
+            // ignore, user will still be logged in with token
+        }
         toast.success('Logged in successfully');
-        router.push('/dashboard');
+        router.push('/');
     } catch (err) {
         errorMessage.value = err.response?.data?.message || 'Login failed';
         toast.error(errorMessage.value);
@@ -113,6 +127,7 @@ const handleLogin = async () => {
 };
 
 const googleLogin = () => {
+    toast.info('Redirecting to Google...');
     googleAuthLogin();
 };
 
