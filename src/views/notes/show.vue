@@ -1,31 +1,29 @@
 <template>
-    <div class="container mx-auto p-4">
-        <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold mb-4">Edit Note</h1>
-            <div class="m-4 flex gap-2">
-                <div class="mt-4 flex gap-2">
-                    <button @click="saveNote" :disabled="!isChanged || !note.title.trim() || saving"
-                        class="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50">
-                        {{ saving ? "Saving..." : "Save Note" }}
+    <NotesLayout>
+        <div class="notes-container">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-2xl font-bold">Edit Note</h1>
+                <div class="flex gap-2">
+                    <button @click="saveNote" :disabled="!isChanged || !note.title.trim() || saving" class="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50">
+                        {{ saving ? 'Saving...' : 'Save' }}
                     </button>
-                    <button @click="goBack" class="bg-gray-500 text-white px-4 py-2 rounded">
-                        Back to Notes
-                    </button>
+                    <button @click="goBack" class="bg-gray-500 text-white px-4 py-2 rounded">Back to Notes</button>
                 </div>
             </div>
-        </div>
 
-        <div v-if="loading" class="text-gray-500">Loading note...</div>
-        <div v-else-if="error" class="text-red-500">{{ error }}</div>
+            <div v-if="loading" class="text-gray-500">Loading note...</div>
+            <div v-else-if="error" class="text-red-500">{{ error }}</div>
 
-        <div v-else>
-            <input v-model="note.title" type="text" placeholder="Note Title" class="border p-2 rounded w-full mb-2" />
-            <TextEditor v-model="note.content" />
+            <div v-else>
+                <input v-model="note.title" type="text" placeholder="Note Title" class="border p-2 rounded w-full mb-2" />
+                <TextEditor v-model="note.content" />
+            </div>
         </div>
-    </div>
+    </NotesLayout>
 </template>
 
 <script setup>
+import NotesLayout from '@/layouts/NotesLayout.vue';
 import { ref, reactive, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "../../services/api";

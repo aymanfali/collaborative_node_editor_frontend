@@ -12,6 +12,29 @@ const options = {
   pauseOnHover: true,
 };
 
+// Handle Google OAuth redirect tokens from URL hash before app mounts
+// Backend redirects to: FRONTEND_URL/#accessToken=...&refreshToken=...
+(function captureOAuthTokensFromHash() {
+  if (typeof window === 'undefined') return;
+  const hash = window.location.hash || '';
+  if (hash.startsWith('#')) {
+    const params = new URLSearchParams(hash.substring(1));
+    const accessToken = params.get('accessToken');
+    const refreshToken = params.get('refreshToken');
+    if (accessToken) {
+      try {
+        localStorage.setItem('accessToken', accessToken);
+        if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+      } catch (_) {
+        // ignore storage errors
+      }
+      // Clean the hash from the URL without reloading
+      const { pathname, search } = window.location;
+      window.history.replaceState({}, document.title, pathname + search);
+    }
+  }
+})();
+
 const app = createApp(App);
 
 app.use(router);
