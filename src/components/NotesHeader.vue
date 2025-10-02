@@ -33,6 +33,8 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/services/api.js';
+import { logout as logoutApi } from '@/services/auth.js';
+import { useToast } from 'vue-toastification';
 
 const emit = defineEmits(['toggle-nav']);
 
@@ -41,68 +43,64 @@ const userAvatar = ref('');
 const isLoggedIn = ref(false);
 const router = useRouter();
 const userInitial = computed(() => (userName.value?.trim()?.charAt(0)?.toUpperCase() || '?'));
+const toast = useToast();
 
 onMounted(async () => {
+  // Do NOT trust cached user blindly; always validate with backend
+  isLoggedIn.value = false;
+  userName.value = '';
+  userAvatar.value = '';
   try {
-    const stored = JSON.parse(localStorage.getItem('activeUser'));
-    if (stored && (stored.name || stored.username)) {
-      userName.value = stored.name || stored.username;
-      userAvatar.value = stored.avatar || '';
+    // 1) Try cookie-based auth (HttpOnly cookies)
+    const res = await api.get('/auth/me');
+    const fetchedUser = res.data?.data || null;
+    if (fetchedUser) {
+      localStorage.setItem('activeUser', JSON.stringify(fetchedUser));
+      userName.value = fetchedUser.name || '';
+      userAvatar.value = fetchedUser.avatar || '';
       isLoggedIn.value = true;
-    } else {
-      userName.value = '';
-      userAvatar.value = '';
-      // 1) Try cookie-based auth first (HttpOnly cookies)
-      try {
-        const res = await api.get('/auth/me');
-        const fetchedUser = res.data?.data || null;
-        if (fetchedUser) {
-          localStorage.setItem('activeUser', JSON.stringify(fetchedUser));
-          userName.value = fetchedUser.name || '';
-          userAvatar.value = fetchedUser.avatar || '';
-          isLoggedIn.value = true;
-          return;
-        }
-      } catch (_) {
-        // ignore and try token fallback next
-      }
-
-      // 2) Fallback: use bearer token from localStorage if present
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        try {
-          const res = await api.get('/auth/me', { headers: { Authorization: `Bearer ${token}` } });
-          const fetchedUser = res.data?.data || null;
-          if (fetchedUser) {
-            localStorage.setItem('activeUser', JSON.stringify(fetchedUser));
-            userName.value = fetchedUser.name || '';
-            userAvatar.value = fetchedUser.avatar || '';
-            isLoggedIn.value = true;
-          }
-        } catch (_) {
-          isLoggedIn.value = false;
-        }
-      } else {
-        isLoggedIn.value = false;
-      }
+      return;
     }
-  } catch (err) {
-    userName.value = '';
-    userAvatar.value = '';
-    isLoggedIn.value = false;
+  } catch (_) {
+    // proceed to token fallback
+  }
+
+  // 2) Fallback: use bearer token from localStorage if present
+  const token = localStorage.getItem('accessToken');
+  if (token) {
+    try {
+      const res = await api.get('/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+      const fetchedUser = res.data?.data || null;
+      if (fetchedUser) {
+        localStorage.setItem('activeUser', JSON.stringify(fetchedUser));
+        userName.value = fetchedUser.name || '';
+        userAvatar.value = fetchedUser.avatar || '';
+        isLoggedIn.value = true;
+      }
+    } catch (_) {
+      localStorage.removeItem('activeUser');
+    }
   }
 });
 
-function handleLogout() {
+async function handleLogout() {
   try {
+    // call backend to clear cookies if any
+    const rt = localStorage.getItem('refreshToken');
+    await logoutApi(rt);
+  } catch (_) {
+    // ignore errors; still clear local state
+  } finally {
     localStorage.removeItem('activeUser');
     localStorage.removeItem('accessToken');
-  } finally {
+    localStorage.removeItem('refreshToken');
     isLoggedIn.value = false;
-    router.push('/login');
+    toast.success('Logged out successfully');
+    // Hard reload to clear any in-memory state
+    router.push('/');
+    window.location.reload();
   }
 }
-
 function goLogin() {
   router.push('/login');
 }
@@ -111,3 +109,4 @@ function goRegister() {
   router.push('/register');
 }
 </script>
+
