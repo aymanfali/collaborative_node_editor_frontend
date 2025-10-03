@@ -5,7 +5,7 @@ import { onMounted, ref } from 'vue';
 import api from '@/services/api.js';
 import { useToast } from 'vue-toastification';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faArrowRightFromBracket, faGlobe, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket, faCopyright, faGlobe, faUser } from '@fortawesome/free-solid-svg-icons';
 
 const router = useRouter()
 const user = ref({})
@@ -14,6 +14,8 @@ const isProfileModalOpen = ref(false)
 const toast = useToast()
 
 const emit = defineEmits(['toggle-nav', 'close'])
+
+const appName = import.meta.env.VITE_APP_NAME ?? 'CoNotes';
 
 function toggleAccountList() {
     isAccountListOpen.value = !isAccountListOpen.value
@@ -81,7 +83,10 @@ const handleLogout = () => {
                 &equiv;
             </button>
             <div class="logo m-2">
-                <img class="w-36 opacity-90" loading="lazy" src="" alt="logo">
+                <FontAwesomeIcon class="me-3" :icon="faCopyright" size="3x" />
+            </div>
+            <div class="">
+                <h2 class="text-lg font-semibold">{{ appName }}</h2>
             </div>
         </div>
         <div class="right flex gap-2.5 items-center">
