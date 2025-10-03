@@ -31,20 +31,15 @@ onMounted(async () => {
 
 <template>
   <section>
-    <h1 class="text-xl font-semibold mb-3">Users</h1>
+    <h1 class="text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-4">Users</h1>
     <div v-if="loading">Loading...</div>
     <div v-else-if="error" class="text-red-500">{{ error }}</div>
-    <Table
-      v-else
-      :headers="['Avatar','Name','Email','Provider','Role','Date']"
-      :items="users"
-      :filterableColumns="[
+    <Table v-else :headers="['Avatar','Name','Email','Provider','Role','Date']" :items="users" :filterableColumns="[
         { key: 'name', label: 'Name' },
         { key: 'email', label: 'Email' },
         { key: 'provider', label: 'Provider' },
         { key: 'role', label: 'Role' },
         { key: 'date', label: 'Date', type: 'date' },
-      ]"
-    />
+      ]" />
   </section>
 </template>

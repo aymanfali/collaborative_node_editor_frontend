@@ -6,15 +6,24 @@
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         <div class="rounded-xl p-5 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-md">
           <div class="text-sm opacity-90 mb-1">Total Users</div>
-          <div class="text-3xl font-bold">—</div>
+          <div class="text-3xl font-bold">
+            <span v-if="loading">...</span>
+            <span v-else>{{ stats.users }}</span>
+          </div>
         </div>
         <div class="rounded-xl p-5 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-md">
           <div class="text-sm opacity-90 mb-1">Total Notes</div>
-          <div class="text-3xl font-bold">—</div>
+          <div class="text-3xl font-bold">
+            <span v-if="loading">...</span>
+            <span v-else>{{ stats.notes }}</span>
+          </div>
         </div>
         <div class="rounded-xl p-5 bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-md">
           <div class="text-sm opacity-90 mb-1">Active Sessions</div>
-          <div class="text-3xl font-bold">—</div>
+          <div class="text-3xl font-bold">
+            <span v-if="loading">...</span>
+            <span v-else>{{ stats.activeSessions }}</span>
+          </div>
         </div>
         <div class="rounded-xl p-5 bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-md">
           <div class="text-sm opacity-90 mb-1">Errors (24h)</div>
@@ -35,8 +44,26 @@
           </div>
         </div>
       </div>
+      <p v-if="error" class="mt-4 text-sm text-rose-600">{{ error }}</p>
   </section>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+import api from '@/services/api'
+
+const stats = ref({ users: 0, notes: 0, activeSessions: 0 })
+const loading = ref(true)
+const error = ref('')
+
+onMounted(async () => {
+  try {
+    const { data } = await api.get('/admin/stats')
+    stats.value = data
+  } catch (e) {
+    error.value = e?.response?.data?.message || 'Failed to load stats'
+  } finally {
+    loading.value = false
+  }
+})
 </script>
