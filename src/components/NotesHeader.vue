@@ -12,23 +12,37 @@
 
     <div class="flex items-center gap-3">
       <template v-if="isLoggedIn">
-        <div class="flex items-center gap-2">
-          <div class="text-sm text-white/80">Welcome back,</div>
-          <div class="font-medium">{{ userName }}</div>
-        </div>
-        <img v-if="userAvatar" :src="userAvatar" alt="avatar"
-          class="w-8 h-8 rounded-full object-cover ring-2 ring-white/10" />
-        <div v-else
-          class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white select-none">
-          {{ userInitial }}
-        </div>
         <button v-if="isAdmin" @click="goDashboard"
           class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm">
           <FontAwesomeIcon class="me-3" :icon="faGaugeHigh" />Dashboard
         </button>
-        <button @click="handleLogout" class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm">
-          <FontAwesomeIcon class="me-3" :icon="faArrowRightFromBracket" />Logout
-        </button>
+        <div class="flex items-center gap-2">
+          <div class="font-medium cursor-pointer" @click="toggleAccountList">{{ userName }}</div>
+        </div>
+        <img v-if="userAvatar" :src="userAvatar" alt="avatar"
+          class="w-8 h-8 rounded-full object-cover ring-2 ring-white/10 cursor-pointer" @click="toggleAccountList" />
+        <div v-else
+          class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white select-none cursor-pointer"
+          @click="toggleAccountList">
+          {{ userInitial }}
+        </div>
+
+        <div class="relative">
+          <div v-if="isAccountListOpen"
+            class="backdrop-blur bg-white/10 text-white p-1 rounded-md absolute top-10 right-0 mt-2 shadow-lg w-44 border border-white/10">
+            <button @click="goProfile"
+              class="flex justify-start items-center w-full hover:bg-white/10 p-2 cursor-pointer rounded-md">
+              <FontAwesomeIcon class="me-3" :icon="faUser" />
+              <span>Profile</span>
+            </button>
+            <button @click="handleLogout"
+              class="flex justify-start items-center w-full text-red-300 hover:bg-white/10 p-2 cursor-pointer rounded-md">
+              <FontAwesomeIcon class="me-3" :icon="faArrowRightFromBracket" />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+
       </template>
       <template v-else>
         <button @click="goLogin"
@@ -47,7 +61,7 @@ import api from '@/services/api.js';
 import { logout as logoutApi } from '@/services/auth.js';
 import { useToast } from 'vue-toastification';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faArrowRightFromBracket, faCopyright, faGaugeHigh } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket, faCopyright, faGaugeHigh, faUser } from '@fortawesome/free-solid-svg-icons';
 
 const emit = defineEmits(['toggle-nav']);
 
@@ -55,6 +69,7 @@ const userName = ref('');
 const userAvatar = ref('');
 const isLoggedIn = ref(false);
 const isAdmin = ref(false);
+const isAccountListOpen = ref(false)
 const router = useRouter();
 // Read application name from Vite env. Vite only exposes variables prefixed with VITE_.
 const appName = import.meta.env.VITE_APP_NAME ?? 'CoNotes';
@@ -119,6 +134,15 @@ onMounted(async () => {
   }
 });
 
+function toggleAccountList() {
+  isAccountListOpen.value = !isAccountListOpen.value
+}
+
+function goProfile() {
+  isAccountListOpen.value = false
+  router.push('/profile')
+}
+
 async function handleLogout() {
   try {
     // call backend to clear cookies if any
@@ -150,4 +174,3 @@ function goDashboard() {
   router.push('/dashboard');
 }
 </script>
-

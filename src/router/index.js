@@ -19,6 +19,12 @@ const router = createRouter({
       component: NoteIndex,
     },
     {
+      path: "/profile",
+      name: "profile",
+      component: () => import("@/views/profile/index.vue"),
+      meta: { requiresAuth: true },
+    },
+    {
       path: "/notes",
       name: "note-create",
       component: NoteCreate,

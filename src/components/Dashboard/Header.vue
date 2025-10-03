@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import ThemeToggle from '../ThemeToggle.vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import api from '@/services/api.js';
 import { useToast } from 'vue-toastification';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -23,6 +23,11 @@ function toggleAccountList() {
 
 function toggleProfileModal() {
     isProfileModalOpen.value = !isProfileModalOpen.value
+}
+
+function goProfile() {
+    isAccountListOpen.value = false
+    router.push('/profile')
 }
 
 onMounted(async () => {
@@ -61,12 +66,19 @@ onMounted(async () => {
     user.value = storedUser
 })
 
+const userInitial = computed(() => (user.value?.name?.trim()?.charAt(0)?.toUpperCase() || '?'))
+
 function closeModal() {
     isProfileModalOpen.value = false
     emit('close')
 }
 
-const handleLogout = () => {
+const handleLogout = async () => {
+    try {
+        await api.post('/auth/logout')
+    } catch (_) {
+        // ignore errors; proceed with client-side cleanup
+    }
     localStorage.removeItem('activeUser')
     router.push('/login')
     toast.success("Logged out successfully!")
@@ -98,13 +110,16 @@ const handleLogout = () => {
             </router-link>
             <ThemeToggle />
             <div class="avatar flex flex-row-reverse items-center relative">
-                <span class="material-symbols-outlined ms-3 cursor-pointer" @click="toggleAccountList">
-                    <FontAwesomeIcon class="me-3" :icon="faUser" />
-                </span>
+                <div v-if="user.avatar" class="w-8 h-8 rounded-full overflow-hidden cursor-pointer ms-3" @click="toggleAccountList">
+                    <img :src="user.avatar" alt="avatar" class="w-full h-full object-cover" />
+                </div>
+                <div v-else class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white cursor-pointer ms-3" @click="toggleAccountList">
+                    {{ userInitial }}
+                </div>
                 <span class="cursor-pointer" @click="toggleAccountList">{{ user.name }}</span>
                 <div class="backdrop-blur bg-white/10 text-white p-1 rounded-md absolute top-full right-0 mt-2 shadow-lg w-44 border border-white/10"
                     v-if="isAccountListOpen">
-                    <button @click="toggleProfileModal"
+                    <button @click="goProfile"
                         class="flex justify-start items-center w-full hover:bg-white/10 p-2 cursor-pointer rounded-md">
                         <FontAwesomeIcon class="me-3" :icon="faUser" />
                         <span>Profile</span>
