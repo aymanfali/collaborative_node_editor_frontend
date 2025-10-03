@@ -10,7 +10,7 @@
                         </div>
                         <button @click="goToCreate"
                             class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow">
-                            Create New Note
+                            <FontAwesomeIcon class="me-3" :icon="faPlus" />Create New Note
                         </button>
                     </div>
                 </div>
@@ -18,7 +18,8 @@
 
             <div v-if="loading" class="text-slate-600 dark:text-slate-300">Loading notes...</div>
             <div v-else-if="error" class="text-rose-600">{{ error }}</div>
-            <div v-else-if="notes.length === 0" class="text-slate-500 dark:text-slate-400 italic">No notes yet. Create your first one above!</div>
+            <div v-else-if="notes.length === 0" class="text-slate-500 dark:text-slate-400 italic">No notes yet. Create
+                your first one above!</div>
 
             <ul class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 <li v-for="note in notes" :key="note._id"
@@ -30,12 +31,21 @@
                         </router-link>
                         <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Last updated just now</div>
                     </div>
-                    <button @click="deleteNote(note._id)"
-                        class="px-3 py-1.5 rounded-md border border-rose-300 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">
-                        Delete
+                    <button @click="confirmDelete(note)"
+                        class="px-3 py-1.5 rounded-md bg-white/10 shadow text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">
+                        <FontAwesomeIcon class="me-3" :icon="faTrash" />Delete
                     </button>
                 </li>
             </ul>
+
+            <ConfirmModal v-model:show="isConfirmOpen"
+              title="Delete note"
+              message="Are you sure you want to permanently delete this note? This action cannot be undone."
+              confirmText="Delete"
+              cancelText="Cancel"
+              destructive
+              @confirm="performDelete"
+            />
         </section>
     </NotesLayout>
 </template>
@@ -46,6 +56,9 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "../../services/api";
 import { useToast } from "vue-toastification";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const notes = ref([]);
 const loading = ref(true);
@@ -68,8 +81,20 @@ const fetchNotes = async () => {
     }
 };
 
-const deleteNote = async (id) => {
+// confirmation flow
+const isConfirmOpen = ref(false);
+const noteToDelete = ref(null);
+
+const confirmDelete = (note) => {
+    noteToDelete.value = note;
+    isConfirmOpen.value = true;
+};
+
+const performDelete = async () => {
+    if (!noteToDelete.value) return;
+    const id = noteToDelete.value._id;
     const oldNotes = [...notes.value];
+    // optimistically remove
     notes.value = notes.value.filter((n) => n._id !== id);
     try {
         await api.delete(`/notes/${id}`);
@@ -78,6 +103,8 @@ const deleteNote = async (id) => {
         notes.value = oldNotes;
         toast.error("Failed to delete note.");
         console.error("Error deleting note:", err);
+    } finally {
+        noteToDelete.value = null;
     }
 };
 

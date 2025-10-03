@@ -1,40 +1,43 @@
 <template>
-    <header class="relative z-40 bg-gradient-to-r from-slate-900 to-blue-900 text-white border-b border-white/10 py-4 px-6 flex items-center justify-between shadow">
-        <div class="flex items-center gap-3">
-            <button class="md:hidden p-2 rounded hover:bg-white/10" @click="$emit('toggle-nav')">☰</button>
-            <img src="/favicon.ico" alt="logo" class="w-10 h-10 rounded opacity-90" />
-            <div>
-                <h2 class="text-lg font-semibold">Notes</h2>
-                <p class="text-sm text-white/70 hidden sm:block">Your personal workspace</p>
-            </div>
-        </div>
+  <header
+    class="relative z-40 bg-gradient-to-r from-slate-900 to-blue-900 text-white border-b border-white/10 py-4 px-6 flex items-center justify-between shadow">
+    <div class="flex items-center gap-3">
+      <button class="md:hidden p-2 rounded hover:bg-white/10" @click="$emit('toggle-nav')">☰</button>
+      <FontAwesomeIcon class="me-3" :icon="faCopyright" size="3x" />
+      <div>
+        <h2 class="text-lg font-semibold">{{ appName }}</h2>
+        <p class="text-sm text-white/70 hidden sm:block">Your personal Real-time Note</p>
+      </div>
+    </div>
 
-        <div class="flex items-center gap-3">
-            <template v-if="isLoggedIn">
-                <div class="flex items-center gap-2">
-                    <div class="text-sm text-white/80">Welcome back,</div>
-                    <div class="font-medium">{{ userName }}</div>
-                </div>
-                <img v-if="userAvatar" :src="userAvatar" alt="avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-white/10" />
-                <div v-else
-                    class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white select-none">
-                    {{ userInitial }}
-                </div>
-                <button v-if="isAdmin" @click="goDashboard"
-                    class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm">
-                    <FontAwesomeIcon class="me-3" :icon="faGaugeHigh" />Dashboard
-                </button>
-                <button @click="handleLogout"
-                    class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm">Logout</button>
-            </template>
-            <template v-else>
-                <button @click="goLogin"
-                    class="px-3 py-2 rounded-md bg-white text-slate-900 hover:bg-slate-100 text-sm">Login</button>
-                <button @click="goRegister"
-                    class="px-3 py-2 rounded-md border border-white/30 hover:bg-white/10 text-white text-sm">Register</button>
-            </template>
+    <div class="flex items-center gap-3">
+      <template v-if="isLoggedIn">
+        <div class="flex items-center gap-2">
+          <div class="text-sm text-white/80">Welcome back,</div>
+          <div class="font-medium">{{ userName }}</div>
         </div>
-    </header>
+        <img v-if="userAvatar" :src="userAvatar" alt="avatar"
+          class="w-8 h-8 rounded-full object-cover ring-2 ring-white/10" />
+        <div v-else
+          class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white select-none">
+          {{ userInitial }}
+        </div>
+        <button v-if="isAdmin" @click="goDashboard"
+          class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm">
+          <FontAwesomeIcon class="me-3" :icon="faGaugeHigh" />Dashboard
+        </button>
+        <button @click="handleLogout" class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm">
+          <FontAwesomeIcon class="me-3" :icon="faArrowRightFromBracket" />Logout
+        </button>
+      </template>
+      <template v-else>
+        <button @click="goLogin"
+          class="px-3 py-2 rounded-md bg-white text-slate-900 hover:bg-slate-100 text-sm">Login</button>
+        <button @click="goRegister"
+          class="px-3 py-2 rounded-md border border-white/30 hover:bg-white/10 text-white text-sm">Register</button>
+      </template>
+    </div>
+  </header>
 </template>
 
 <script setup>
@@ -44,7 +47,7 @@ import api from '@/services/api.js';
 import { logout as logoutApi } from '@/services/auth.js';
 import { useToast } from 'vue-toastification';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faGaugeHigh } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket, faCopyright, faGaugeHigh } from '@fortawesome/free-solid-svg-icons';
 
 const emit = defineEmits(['toggle-nav']);
 
@@ -53,6 +56,8 @@ const userAvatar = ref('');
 const isLoggedIn = ref(false);
 const isAdmin = ref(false);
 const router = useRouter();
+// Read application name from Vite env. Vite only exposes variables prefixed with VITE_.
+const appName = import.meta.env.VITE_APP_NAME ?? 'CoNotes';
 const userInitial = computed(() => (userName.value?.trim()?.charAt(0)?.toUpperCase() || '?'));
 const toast = useToast();
 
