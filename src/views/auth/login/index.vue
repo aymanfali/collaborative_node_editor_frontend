@@ -1,47 +1,56 @@
 <template>
-    <div class="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-        <div class="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
-            <div class="text-center mb-4">
-                <h1 class="text-2xl font-bold">Sign in</h1>
-                <p class="text-sm text-gray-500">Welcome back — please sign in to continue.</p>
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
+        <!-- Top gradient banner -->
+        <div class="bg-gradient-to-r from-slate-900 to-blue-900 py-10">
+            <div class="max-w-3xl mx-auto px-6">
+                <h1 class="text-3xl font-semibold text-white">Welcome back</h1>
+                <p class="text-white/70 mt-1">Sign in to access your notes and collaborate.</p>
             </div>
+        </div>
+
+        <!-- Auth card -->
+        <div class="max-w-md mx-auto -mt-8 px-6 pb-10">
+            <div class="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-6 rounded-xl shadow-sm">
+                <div class="text-center mb-4">
+                    <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Sign in</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Use your credentials below</p>
+                </div>
 
             <form @submit.prevent="handleLogin" novalidate>
                 <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" v-model="email" placeholder="you@example.com" required
-                        class="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
+                    <input type="email" v-model="email" placeholder="you@example.com" required autocomplete="email"
+                        class="mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200"
                         aria-label="Email" />
                 </div>
 
                 <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-700">Password</label>
-                    <div class="flex items-center gap-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+                    <div class="relative">
                         <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Your password"
-                            required
-                            class="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            required autocomplete="current-password"
+                            class="mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200"
                             aria-label="Password" />
                         <button type="button" @click="toggleShowPassword"
-                            class="text-sm text-gray-600 px-2 py-1 rounded border hover:bg-gray-100"
-                            :aria-pressed="showPassword">
+                            class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                            :aria-pressed="showPassword" aria-label="Toggle password visibility">
                             <FontAwesomeIcon v-if="showPassword" :icon="faEyeSlash" />
                             <FontAwesomeIcon v-else :icon="faEye" />
                         </button>
-
                     </div>
-                    <p v-if="password && password.length < 6" class="text-xs text-red-500 mt-1">Password should be at
+                    <p v-if="password && password.length < 6" class="text-xs text-rose-500 mt-1">Password should be at
                         least 6 characters.</p>
                 </div>
 
-                <div v-if="errorMessage" class="mb-3 text-sm text-red-600">{{ errorMessage }}</div>
+                <div v-if="errorMessage" class="mb-3 text-sm text-rose-600">{{ errorMessage }}</div>
 
                 <button type="submit" :disabled="!canSubmit || loading"
-                    class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-60 flex items-center justify-center gap-2">
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md disabled:opacity-60 flex items-center justify-center gap-2 shadow">
                     <svg v-if="loading" class="animate-spin h-4 w-4" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
                             fill="none"></circle>
                         <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"></path>
+                            d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a 8 8 0 01-8-8z"></path>
                     </svg>
                     <span>{{ loading ? 'Signing in...' : 'Sign in' }}</span>
                 </button>
@@ -49,17 +58,18 @@
 
             <div class="mt-4">
                 <button @click="googleLogin"
-                    class="w-full border rounded py-2 flex items-center justify-center gap-2 hover:bg-gray-50">
+                    class="w-full border border-gray-300 dark:border-gray-700 rounded-md py-2 flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 text-slate-700 dark:text-slate-200">
                     <FontAwesomeIcon :icon="faGoogle" />
                     <span>Continue with Google</span>
                 </button>
             </div>
 
-            <p class="mt-4 text-center text-sm text-gray-600">
+            <p class="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
                 Don't have an account?
-                <router-link to="/register" class="text-blue-600 font-medium">Create one</router-link>
+                <router-link to="/register" class="text-indigo-600 dark:text-indigo-400 font-medium">Create one</router-link>
             </p>
         </div>
+    </div>
     </div>
 </template>
 
@@ -117,7 +127,7 @@ const handleLogin = async () => {
             // ignore, user will still be logged in with token
         }
         toast.success('Logged in successfully');
-        router.push('/');
+        router.push('/dashboard');
     } catch (err) {
         errorMessage.value = err.response?.data?.message || 'Login failed';
         toast.error(errorMessage.value);
