@@ -2,8 +2,9 @@
 import { faHouse, faNoteSticky, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { RouterLink } from 'vue-router'
+
 defineProps({
-    isOpen: false
+    isOpen: { type: Boolean, default: true }
 })
 </script>
 
