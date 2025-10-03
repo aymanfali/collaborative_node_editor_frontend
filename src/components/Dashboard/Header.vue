@@ -4,6 +4,8 @@ import ThemeToggle from '../ThemeToggle.vue';
 import { onMounted, ref } from 'vue';
 import api from '@/services/api.js';
 import { useToast } from 'vue-toastification';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faArrowRightFromBracket, faGlobe, faUser } from '@fortawesome/free-solid-svg-icons';
 
 const router = useRouter()
 const user = ref({})
@@ -71,43 +73,40 @@ const handleLogout = () => {
 </script>
 
 <template>
-    <div class="main-nav relative flex justify-between items-center z-50 bg-primary text-text-sec shadow-2xl p-6">
+    <div
+        class="relative flex justify-between items-center z-50 bg-gradient-to-r from-slate-900 to-blue-900 text-white border-b border-white/10 p-5 shadow-md">
         <div class="flex items-center">
             <button @click="$emit('toggle-nav')"
-                class="dash-nav-trigger lg:hidden bg-transparent text-2xl mb-2 me-2 text-text-sec cursor-pointer">
+                class="dash-nav-trigger lg:hidden bg-transparent text-2xl mb-2 me-2 cursor-pointer hover:opacity-80">
                 &equiv;
             </button>
             <div class="logo m-2">
-                <img class="w-36" loading="lazy" src="" alt="logo">
+                <img class="w-36 opacity-90" loading="lazy" src="" alt="logo">
             </div>
         </div>
         <div class="right flex gap-2.5 items-center">
-            <router-link to="/" class="m-2 cursor-pointer flex items-center bg-bg rounded-md p-2 text-horizontal-line" title="Visit Website">
-                <span class="material-symbols-outlined md:me-2">
-                    globe
-                </span>
+            <router-link to="/"
+                class="m-2 cursor-pointer flex items-center rounded-md px-3 py-2 bg-white/10 hover:bg-white/20 text-white"
+                title="Visit Website">
+                <FontAwesomeIcon class="me-3" :icon="faGlobe" />
                 <span class="hidden md:block">Visit Website</span>
             </router-link>
             <ThemeToggle />
             <div class="avatar flex flex-row-reverse items-center relative">
                 <span class="material-symbols-outlined ms-3 cursor-pointer" @click="toggleAccountList">
-                    account_circle
+                    <FontAwesomeIcon class="me-3" :icon="faUser" />
                 </span>
                 <span class="cursor-pointer" @click="toggleAccountList">{{ user.name }}</span>
-                <div class="bg-bg p-1 rounded-md absolute top-full right-0 mt-2 shadow-md w-40"
+                <div class="backdrop-blur bg-white/10 text-white p-1 rounded-md absolute top-full right-0 mt-2 shadow-lg w-44 border border-white/10"
                     v-if="isAccountListOpen">
                     <button @click="toggleProfileModal"
-                        class="flex justify-start items-center w-full text-text-main hover:bg-gray/40 p-2 cursor-pointer rounded-md">
-                        <span class="material-symbols-outlined me-3">
-                            account_circle
-                        </span>
+                        class="flex justify-start items-center w-full hover:bg-white/10 p-2 cursor-pointer rounded-md">
+                        <FontAwesomeIcon class="me-3" :icon="faUser" />
                         <span>Profile</span>
                     </button>
                     <button @click="handleLogout"
-                        class="flex justify-start items-center w-full text-danger hover:bg-gray/40 p-2 cursor-pointer rounded-md">
-                        <span class="material-symbols-outlined me-3">
-                            logout
-                        </span>
+                        class="flex justify-start items-center w-full text-red-300 hover:bg-white/10 p-2 cursor-pointer rounded-md">
+                        <FontAwesomeIcon class="me-3" :icon="faArrowRightFromBracket" />
                         <span>Logout</span>
                     </button>
                 </div>
