@@ -1,11 +1,12 @@
 <template>
-    <div id="container">
+    <div id="container" :class="[readOnly ? 'opacity-90' : '', 'rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800']">
         <div ref="editor"></div>
     </div>
+    
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
@@ -14,6 +15,10 @@ const props = defineProps({
     modelValue: {
         type: String,
         default: "",
+    },
+    readOnly: {
+        type: Boolean,
+        default: false,
     },
 });
 const emit = defineEmits(["update:modelValue"]);
@@ -41,6 +46,7 @@ onMounted(() => {
     quill = new Quill(editor.value, {
         modules: { toolbar: toolbarOptions },
         theme: "snow",
+        readOnly: props.readOnly,
     });
 
     // Load initial content
@@ -68,9 +74,50 @@ onMounted(() => {
     });
 });
 
+// react to readOnly changes
+watch(() => props.readOnly, (ro) => {
+    if (quill) {
+        quill.enable(!ro);
+    }
+});
+
 onUnmounted(() => {
     if (socket) {
         socket.disconnect();
     }
 });
 </script>
+
+<style scoped>
+/* Quill theming alignment with dashboard/notes look */
+:deep(.ql-toolbar.ql-snow) {
+  border: 1px solid #e5e7eb; /* gray-200 */
+  background-color: #f8fafc; /* slate-50 */
+  border-bottom: none;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+:deep(.ql-container.ql-snow) {
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-top: none;
+  background-color: transparent;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  min-height: 320px;
+}
+
+:deep(.ql-editor) {
+  color: #0f172a; /* slate-900 */
+}
+
+@media (prefers-color-scheme: dark) {
+  :deep(.ql-toolbar.ql-snow) {
+    border-color: #334155; /* slate-700 */
+    background-color: #0f172a; /* slate-900 */
+  }
+  :deep(.ql-container.ql-snow) {
+    border-color: #334155; /* slate-700 */
+  }
+}
+</style>
