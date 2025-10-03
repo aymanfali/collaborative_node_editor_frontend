@@ -1,26 +1,42 @@
 <template>
     <NotesLayout>
-        <div class="notes-container">
-            <div class="flex justify-between items-center mb-4">
-                <h1 class="text-2xl font-bold">Your Notes</h1>
-                <button @click="goToCreate" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                    Create New Note
-                </button>
+        <section>
+            <div class="mb-5">
+                <div class="rounded-xl bg-gradient-to-r from-slate-900 to-blue-900 text-white p-5 shadow">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <h1 class="text-2xl font-semibold">Your Notes</h1>
+                            <p class="text-white/70 text-sm">Create, edit and collaborate</p>
+                        </div>
+                        <button @click="goToCreate"
+                            class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow">
+                            Create New Note
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <div v-if="loading" class="text-gray-600">Loading notes...</div>
-            <div v-else-if="error" class="text-red-500">{{ error }}</div>
-            <div v-else-if="notes.length === 0" class="text-gray-500 italic">No notes yet. Create your first one above!</div>
+            <div v-if="loading" class="text-slate-600 dark:text-slate-300">Loading notes...</div>
+            <div v-else-if="error" class="text-rose-600">{{ error }}</div>
+            <div v-else-if="notes.length === 0" class="text-slate-500 dark:text-slate-400 italic">No notes yet. Create your first one above!</div>
 
-            <ul class="space-y-2">
-                <li v-for="note in notes" :key="note._id" class="p-3 border rounded flex justify-between items-center bg-white">
-                    <router-link v-if="note?._id" :to="{ name: 'note-show', params: { id: note._id } }" class="text-blue-600 font-semibold">
-                        {{ note.title }}
-                    </router-link>
-                    <button @click="deleteNote(note._id)" class="text-red-500">Delete</button>
+            <ul class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <li v-for="note in notes" :key="note._id"
+                    class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm flex items-start justify-between">
+                    <div class="pr-3">
+                        <router-link v-if="note?._id" :to="{ name: 'note-show', params: { id: note._id } }"
+                            class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
+                            {{ note.title }}
+                        </router-link>
+                        <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Last updated just now</div>
+                    </div>
+                    <button @click="deleteNote(note._id)"
+                        class="px-3 py-1.5 rounded-md border border-rose-300 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">
+                        Delete
+                    </button>
                 </li>
             </ul>
-        </div>
+        </section>
     </NotesLayout>
 </template>
 
