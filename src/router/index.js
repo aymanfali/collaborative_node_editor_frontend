@@ -8,6 +8,7 @@ import AuthLayout from "@/layouts/AuthLayout.vue";
 import Dashboard from "@/views/dashboard/index.vue";
 import DashboardUsers from "@/views/dashboard/users/index.vue";
 import DashboardNotes from "@/views/dashboard/notes/index.vue";
+import Home from "@/views/home/index.vue";
 import api from "@/services/api.js";
 
 const router = createRouter({
@@ -15,8 +16,14 @@ const router = createRouter({
   routes: [
     {
       path: "/",
+      name: "home",
+      component: Home,
+    },
+    {
+      path: "/notes",
       name: "notes",
       component: NoteIndex,
+      meta: { requiresAuth: true },
     },
     {
       path: "/profile",
@@ -25,20 +32,23 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/notes",
+      path: "/note-create",
       name: "note-create",
       component: NoteCreate,
+      meta: { requiresAuth: true },
     },
     {
       path: "/notes/:id",
       name: "note-show",
       component: NoteShow,
+      meta: { requiresAuth: true },
     },
+
     { path: "/login", component: AuthLogin },
     { path: "/register", component: AuthSignUp },
     {
       path: "/dashboard",
-      component: AuthLayout, // some layout component
+      component: AuthLayout,
       meta: { requiresAuth: true },
       children: [
         { path: "", component: Dashboard },
@@ -61,23 +71,23 @@ router.beforeEach(async (to, from, next) => {
   // 1) Try cached user
   let user = null;
   try {
-    user = JSON.parse(localStorage.getItem('activeUser'));
+    user = JSON.parse(localStorage.getItem("activeUser"));
   } catch (_) {}
 
   // 2) If missing, validate via backend using cookies
   if (!user) {
     try {
-      const res = await api.get('/auth/me');
+      const res = await api.get("/auth/me");
       user = res.data?.data || null;
-      if (user) localStorage.setItem('activeUser', JSON.stringify(user));
+      if (user) localStorage.setItem("activeUser", JSON.stringify(user));
     } catch (_) {
-      return next('/login');
+      return next("/login");
     }
   }
 
   // 3) Admin gate for dashboard
-  if (to.path.startsWith('/dashboard') && user?.role !== 'admin') {
-    return next('/');
+  if (to.path.startsWith("/dashboard") && user?.role !== "admin") {
+    return next("/");
   }
 
   return next();
