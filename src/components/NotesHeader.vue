@@ -8,6 +8,22 @@
         <h2 class="text-lg font-semibold">{{ appName }}</h2>
         <p class="text-sm text-white/70 hidden sm:block">Your personal Real-time Note</p>
       </div>
+
+      <nav class="hidden md:flex items-center gap-3 ml-6">
+        <router-link
+          to="/"
+          class="relative px-3 py-1 rounded-full text-sm transition-colors"
+          :class="isActive('/') ? 'bg-white/10 text-white ring-1 ring-white/20' : 'text-white/80 hover:bg-white/5'">
+          Home
+        </router-link>
+
+        <router-link
+          to="/notes"
+          class="relative px-3 py-1 rounded-full text-sm transition-colors"
+          :class="isActive('/notes') ? 'bg-white/10 text-white ring-1 ring-white/20' : 'text-white/80 hover:bg-white/5'">
+          Notes
+        </router-link>
+      </nav>
     </div>
 
     <div class="flex items-center gap-3">
@@ -56,7 +72,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import api from '@/services/api.js';
 import { logout as logoutApi } from '@/services/auth.js';
 import { useToast } from 'vue-toastification';
@@ -71,6 +87,13 @@ const isLoggedIn = ref(false);
 const isAdmin = ref(false);
 const isAccountListOpen = ref(false)
 const router = useRouter();
+const route = useRoute();
+
+const isActive = (path) => {
+  if (!route || !route.path) return false;
+  if (path === '/') return route.path === '/';
+  return route.path.startsWith(path);
+}
 // Read application name from Vite env. Vite only exposes variables prefixed with VITE_.
 const appName = import.meta.env.VITE_APP_NAME ?? 'CoNotes';
 const userInitial = computed(() => (userName.value?.trim()?.charAt(0)?.toUpperCase() || '?'));
