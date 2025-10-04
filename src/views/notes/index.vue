@@ -16,7 +16,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 mb-4">
+            <div class="flex items-center gap-3 mb-4 mt-12">
                 <FontAwesomeIcon class="dark:text-white" :icon="faMagnifyingGlass" />
                 <input v-model="search" @input="onSearchInput" type="text"
                     placeholder="Search notes (title and content)"
@@ -28,19 +28,29 @@
             <div v-else-if="notes.length === 0" class="text-slate-500 dark:text-slate-400 italic">No notes yet. Create
                 your first one above!</div>
 
-            <ul class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <ul class="mt-12 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 <li v-for="note in notes" :key="note._id"
-                    class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm flex items-start justify-between">
-                    <div class="pr-3">
-                        <router-link v-if="note?._id" :to="{ name: 'note-show', params: { id: note._id } }"
-                            class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
-                            {{ note.title }}
-                        </router-link>
-                        <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Last updated just now</div>
+                    class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2 shadow-sm flex items-center justify-between">
+                    <div class="flex items-center">
+                        <FontAwesomeIcon class="me-3 dark:text-white" size="3x" :icon="faNoteSticky" />
+                        <div class="pr-3">
+                            <router-link v-if="note?._id" :to="{ name: 'note-show', params: { id: note._id } }"
+                                class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
+                                {{ note.title }}
+                            </router-link>
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                <FontAwesomeIcon class="me-3" :icon="faUser" /> {{ note.owner?.name || note.owner?.email
+                                    ||
+                                'Unknown' }}
+                            </div>
+                            <div class="text-xs my-2 text-slate-500 dark:text-slate-400">
+                                Last updated: {{ formatDateTime(note.updatedAt) }}
+                            </div>
+                        </div>
                     </div>
                     <button @click="confirmDelete(note)"
-                        class="px-3 py-1.5 rounded-md bg-white/10 shadow text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">
-                        <FontAwesomeIcon class="me-3" :icon="faTrash" />Delete
+                        class="p-2 m-2 rounded-md bg-white/10 shadow text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">
+                        <FontAwesomeIcon class="" :icon="faTrash" />
                     </button>
                 </li>
             </ul>
@@ -59,7 +69,7 @@ import { useRouter } from "vue-router";
 import api from "../../services/api";
 import { useToast } from "vue-toastification";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faMagnifyingGlass, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faNoteSticky, faPlus, faTrash, faUser } from '@fortawesome/free-solid-svg-icons';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const notes = ref([]);
@@ -69,6 +79,15 @@ const router = useRouter();
 const toast = useToast();
 const search = ref('');
 let searchTimer = null;
+
+function formatDateTime(val) {
+    if (!val) return '—';
+    try {
+        return new Date(val).toLocaleString();
+    } catch (e) {
+        return String(val);
+    }
+}
 
 const fetchNotes = async (q = '') => {
     loading.value = true;

@@ -102,13 +102,13 @@ const handleLogout = async () => {
             </div>
         </div>
         <div class="right flex gap-2.5 items-center">
+            <ThemeToggle />
             <router-link to="/"
                 class="m-2 cursor-pointer flex items-center rounded-md px-3 py-2 bg-white/10 hover:bg-white/20 text-white"
                 title="Visit Website">
                 <FontAwesomeIcon class="me-3" :icon="faGlobe" />
                 <span class="hidden md:block">Visit Website</span>
             </router-link>
-            <ThemeToggle />
             <div class="avatar flex flex-row-reverse items-center relative">
                 <div v-if="user.avatar" class="w-8 h-8 rounded-full overflow-hidden cursor-pointer ms-3"
                     @click="toggleAccountList">

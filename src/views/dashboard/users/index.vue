@@ -1,13 +1,19 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import Table from '@/components/Dashboard/Table.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import api from '@/services/api.js';
 
 const users = ref([]);
 const loading = ref(true);
 const error = ref('');
 
-onMounted(async () => {
+// confirm modal state
+const showConfirm = ref(false);
+const deletingUser = ref(null);
+const deleting = ref(false);
+
+async function fetchUsers() {
   loading.value = true;
   error.value = '';
   try {
@@ -26,7 +32,32 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
-});
+}
+
+onMounted(fetchUsers);
+
+function handleDelete(user) {
+  deletingUser.value = user;
+  showConfirm.value = true;
+}
+
+// Optional: handle viewing a user (no dedicated page yet)
+function handleView(_user) {
+  // You can navigate to a user profile page here if available
+}
+
+async function confirmDelete() {
+  if (!deletingUser.value?._id) return;
+  deleting.value = true;
+  try {
+    await api.delete(`/admin/users/${deletingUser.value._id}`);
+    await fetchUsers();
+  } catch (e) {
+    error.value = e.response?.data?.message || 'Failed to delete user';
+  } finally {
+    deleting.value = false;
+  }
+}
 </script>
 
 <template>
@@ -40,6 +71,16 @@ onMounted(async () => {
         { key: 'provider', label: 'Provider' },
         { key: 'role', label: 'Role' },
         { key: 'date', label: 'Date', type: 'date' },
-      ]" :allowEdit="false" :showDelete="true" :showView="true" :showExport="false" @view="handleView" />
+      ]" :allowEdit="false" :showDelete="true" :showView="false" :showExport="false" @view="handleView" @delete="handleDelete" />
+
+    <ConfirmModal
+      v-model:show="showConfirm"
+      title="Delete User"
+      :message="`Are you sure you want to delete user ${deletingUser?.name || ''}? This action cannot be undone.`"
+      confirmText="Delete"
+      cancelText="Cancel"
+      :destructive="true"
+      @confirm="confirmDelete"
+    />
   </section>
 </template>

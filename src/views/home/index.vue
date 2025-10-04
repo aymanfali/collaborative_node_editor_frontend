@@ -36,7 +36,7 @@
                                 <FontAwesomeIcon :icon="faShare" />
                             </div>
                             <div>
-                                <div class="font-medium">Shareable links</div>
+                                <div class="font-medium">Shareable Notes</div>
                                 <div class="text-xs">Invite teammates in seconds.</div>
                             </div>
                         </div>

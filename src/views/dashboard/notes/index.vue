@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Table from '@/components/Dashboard/Table.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import api from '@/services/api.js';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -20,6 +21,11 @@ const error = ref('');
 const router = useRouter();
 const search = ref('');
 let searchTimer: any = null;
+
+// confirm modal state for delete
+const showConfirm = ref(false);
+const deletingNote = ref<NoteRow | null>(null);
+const deleting = ref(false);
 
 async function fetchNotes(q = '') {
   loading.value = true;
@@ -56,6 +62,24 @@ function handleView(item: NoteRow) {
   if (!item?._id) return;
   router.push(`/notes/${item._id}`);
 }
+
+function handleDelete(item: NoteRow) {
+  deletingNote.value = item;
+  showConfirm.value = true;
+}
+
+async function confirmDelete() {
+  if (!deletingNote.value?._id) return;
+  deleting.value = true;
+  try {
+    await api.delete(`/notes/${deletingNote.value._id}`);
+    await fetchNotes(search.value.trim());
+  } catch (e: any) {
+    error.value = e?.response?.data?.message || 'Failed to delete note';
+  } finally {
+    deleting.value = false;
+  }
+}
 </script>
 <template>
   <section>
@@ -72,6 +96,16 @@ function handleView(item: NoteRow) {
         { key: 'owner', label: 'Owner' },
         { key: 'email', label: 'Email' },
         { key: 'date', label: 'Date', type: 'date' },
-      ]" :allowEdit="false" :showDelete="true" :showView="true" :showExport="true" @view="handleView" />
+      ]" :allowEdit="false" :showDelete="true" :showView="true" :showExport="true" @view="handleView" @delete="handleDelete" />
+
+    <ConfirmModal
+      v-model:show="showConfirm"
+      title="Delete Note"
+      :message="`Are you sure you want to delete note ${deletingNote?.title || ''}? This action cannot be undone.`"
+      confirmText="Delete"
+      cancelText="Cancel"
+      :destructive="true"
+      @confirm="confirmDelete"
+    />
   </section>
 </template>
