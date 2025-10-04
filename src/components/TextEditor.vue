@@ -91,33 +91,20 @@ onUnmounted(() => {
 <style scoped>
 /* Quill theming alignment with dashboard/notes look */
 :deep(.ql-toolbar.ql-snow) {
-  border: 1px solid #e5e7eb; /* gray-200 */
-  background-color: #f8fafc; /* slate-50 */
+    border: 1px solid var(--color-gray, #e5e7eb);
+    background-color: var(--color-bg, #f8fafc);
   border-bottom: none;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
 }
 
 :deep(.ql-container.ql-snow) {
-  border: 1px solid #e5e7eb; /* gray-200 */
-  border-top: none;
-  background-color: transparent;
+    border: 1px solid var(--color-gray, #e5e7eb);
+    border-top: none;
+    background-color: var(--color-bg, transparent);
   border-bottom-left-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
   min-height: 320px;
 }
 
-:deep(.ql-editor) {
-  color: #0f172a; /* slate-900 */
-}
-
-@media (prefers-color-scheme: dark) {
-  :deep(.ql-toolbar.ql-snow) {
-    border-color: #334155; /* slate-700 */
-    background-color: #0f172a; /* slate-900 */
-  }
-  :deep(.ql-container.ql-snow) {
-    border-color: #334155; /* slate-700 */
-  }
-}
 </style>

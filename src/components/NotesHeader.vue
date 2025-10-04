@@ -10,16 +10,12 @@
       </div>
 
       <nav class="hidden md:flex items-center gap-3 ml-6">
-        <router-link
-          to="/"
-          class="relative px-3 py-1 rounded-full text-sm transition-colors"
+        <router-link to="/" class="relative px-3 py-1 rounded-full text-sm transition-colors"
           :class="isActive('/') ? 'bg-white/10 text-white ring-1 ring-white/20' : 'text-white/80 hover:bg-white/5'">
           Home
         </router-link>
 
-        <router-link
-          to="/notes"
-          class="relative px-3 py-1 rounded-full text-sm transition-colors"
+        <router-link to="/notes" class="relative px-3 py-1 rounded-full text-sm transition-colors"
           :class="isActive('/notes') ? 'bg-white/10 text-white ring-1 ring-white/20' : 'text-white/80 hover:bg-white/5'">
           Notes
         </router-link>
@@ -27,6 +23,7 @@
     </div>
 
     <div class="flex items-center gap-3">
+      <ThemeToggle />
       <template v-if="isLoggedIn">
         <button v-if="isAdmin" @click="goDashboard"
           class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm">
@@ -45,14 +42,14 @@
 
         <div class="relative">
           <div v-if="isAccountListOpen"
-            class="backdrop-blur bg-white/10 text-white p-1 rounded-md absolute top-10 right-0 mt-2 shadow-lg w-44 border border-white/10">
+            class="backdrop-blur bg-white/10 dark:text-white text-slate-800 p-1 rounded-md absolute top-10 right-0 mt-2 shadow-lg w-44 border border-white/10">
             <button @click="goProfile"
-              class="flex justify-start items-center w-full hover:bg-white/10 p-2 cursor-pointer rounded-md">
+              class="flex justify-start items-center w-full hover:bg-slate-800/10 dark:hover:bg-white/10 p-2 cursor-pointer rounded-md">
               <FontAwesomeIcon class="me-3" :icon="faUser" />
               <span>Profile</span>
             </button>
             <button @click="handleLogout"
-              class="flex justify-start items-center w-full text-red-300 hover:bg-white/10 p-2 cursor-pointer rounded-md">
+              class="flex justify-start items-center w-full text-red-300 hover:bg-slate-800/10 dark:hover:bg-white/10 p-2 cursor-pointer rounded-md">
               <FontAwesomeIcon class="me-3" :icon="faArrowRightFromBracket" />
               <span>Logout</span>
             </button>
@@ -78,6 +75,7 @@ import { logout as logoutApi } from '@/services/auth.js';
 import { useToast } from 'vue-toastification';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faArrowRightFromBracket, faCopyright, faGaugeHigh, faUser } from '@fortawesome/free-solid-svg-icons';
+import ThemeToggle from '@/components/ThemeToggle.vue';
 
 const emit = defineEmits(['toggle-nav']);
 
