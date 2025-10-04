@@ -20,7 +20,7 @@
                     </div>
 
                     <div class="mt-8 grid grid-cols-2 gap-3 text-sm text-slate-600 dark:text-slate-300">
-                        <div class="flex items-start gap-3">
+                        <div class="bsm:flex items-start gap-3">
                             <div
                                 class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
                                 <FontAwesomeIcon :icon="faArrowsRotate" />
@@ -30,7 +30,7 @@
                                 <div class="text-xs">Everyone sees edits instantly.</div>
                             </div>
                         </div>
-                        <div class="flex items-start gap-3">
+                        <div class="sm:flex items-start gap-3">
                             <div
                                 class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
                                 <FontAwesomeIcon :icon="faShare" />
@@ -40,7 +40,7 @@
                                 <div class="text-xs">Invite teammates in seconds.</div>
                             </div>
                         </div>
-                        <div class="flex items-start gap-3">
+                        <div class="sm:flex items-start gap-3">
                             <div
                                 class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
                                 <FontAwesomeIcon :icon="faLock" />
@@ -50,7 +50,7 @@
                                 <div class="text-xs">Secure storage and auth.</div>
                             </div>
                         </div>
-                        <div class="flex items-start gap-3">
+                        <div class="sm:flex items-start gap-3">
                             <div
                                 class="w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
                                 <FontAwesomeIcon :icon="faHand" />

@@ -81,11 +81,12 @@ async function confirmDelete() {
   }
 }
 </script>
+
 <template>
   <section>
     <h1 class="text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-4">Notes</h1>
     <div class="flex items-center gap-3 mb-4">
-      <FontAwesomeIcon class="dark:text-white" :icon="faMagnifyingGlass" />
+      <FontAwesomeIcon class="dark:text-white text-black" :icon="faMagnifyingGlass" />
       <input v-model="search" @input="onSearchInput" type="text" placeholder="Search notes (title and content)"
         class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full" />
     </div>

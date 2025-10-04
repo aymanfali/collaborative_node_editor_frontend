@@ -62,54 +62,59 @@
             <span class="text-xs text-slate-500 dark:text-slate-400">{{ presence.length }} online</span>
           </div>
 
-          <TextEditor v-model="note.content" :read-only="!canEdit" :note-id="route.params.id" :user="currentUser"
-            @presence="onPresence" />
-
-          <!-- Collaborators Panel -->
-          <div
-            class="mt-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-              <h2 class="text-lg font-medium text-slate-800 dark:text-slate-100">Collaborators</h2>
-              <span class="text-sm text-slate-500 dark:text-slate-400" v-if="loadingCollabs">Loading...</span>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-2">
+            <!-- Editor column -->
+            <div class="lg:col-span-2">
+              <TextEditor v-model="note.content" :read-only="!canEdit" :note-id="route.params.id" :user="currentUser"
+                @presence="onPresence" />
             </div>
 
-            <div v-if="canManageCollabs" class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-2">
-              <input v-model="inviteEmail" type="email" placeholder="Invite by email"
-                class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full" />
-              <select v-model="invitePermission"
-                class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full">
-                <option value="view">View</option>
-                <option value="edit">Edit</option>
-              </select>
-              <button @click="addOrUpdateCollaborator" :disabled="!inviteEmail"
-                class="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm shadow disabled:opacity-60">
-                Invite / Update
-              </button>
-            </div>
+            <!-- Collaborators sidebar -->
+            <aside
+              class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm h-max">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-medium text-slate-800 dark:text-slate-100">Collaborators</h2>
+                <span class="text-sm text-slate-500 dark:text-slate-400" v-if="loadingCollabs">Loading...</span>
+              </div>
 
-            <div v-if="collaborators.length === 0" class="text-sm text-slate-500 dark:text-slate-400">
-              No collaborators yet.
-            </div>
-            <ul class="divide-y divide-gray-200 dark:divide-gray-800">
-              <li v-for="c in collaborators" :key="normId(c.user)" class="py-3 flex items-center justify-between">
-                <div>
-                  <div class="font-medium text-slate-800 dark:text-slate-100">{{ c.user.name || c.user.email }}</div>
-                  <div class="text-sm text-slate-500 dark:text-slate-400">{{ c.user.email }}</div>
-                </div>
-                <div class="flex items-center gap-2">
-                  <select :disabled="!canManageCollabs"
-                    class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded"
-                    :value="c.permission" @change="onChangePermission(c, $event.target.value)">
-                    <option value="view">View</option>
-                    <option value="edit">Edit</option>
-                  </select>
-                  <button v-if="canManageCollabs" @click="removeCollaborator(normId(c.user))"
-                    class="px-3 py-2 rounded-md border border-rose-300 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">
-                    Remove
-                  </button>
-                </div>
-              </li>
-            </ul>
+              <div v-if="canManageCollabs" class="mb-4 flex flex-col gap-2">
+                <input v-model="inviteEmail" type="email" placeholder="Invite by email"
+                  class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full" />
+                <select v-model="invitePermission"
+                  class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full">
+                  <option value="view">View</option>
+                  <option value="edit">Edit</option>
+                </select>
+                <button @click="addOrUpdateCollaborator" :disabled="!inviteEmail"
+                  class="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm shadow disabled:opacity-60">
+                  Invite / Update
+                </button>
+              </div>
+
+              <div v-if="collaborators.length === 0" class="text-sm text-slate-500 dark:text-slate-400">
+                No collaborators yet.
+              </div>
+              <ul class="divide-y divide-gray-200 dark:divide-gray-800">
+                <li v-for="c in collaborators" :key="normId(c.user)" class="p-3 my-3 flex flex-col gap-4 border border-slate-300/20">
+                  <div>
+                    <div class="font-medium text-slate-800 dark:text-slate-100">{{ c.user.name || c.user.email }}</div>
+                    <div class="text-sm text-slate-500 dark:text-slate-400">{{ c.user.email }}</div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <select :disabled="!canManageCollabs"
+                      class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded"
+                      :value="c.permission" @change="onChangePermission(c, $event.target.value)">
+                      <option value="view">View</option>
+                      <option value="edit">Edit</option>
+                    </select>
+                    <button v-if="canManageCollabs" @click="removeCollaborator(normId(c.user))"
+                      class="px-3 py-2 rounded-md border border-rose-300 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">
+                      Remove
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </aside>
           </div>
         </div>
       </div>

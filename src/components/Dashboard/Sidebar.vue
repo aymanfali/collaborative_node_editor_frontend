@@ -9,33 +9,44 @@ defineProps({
 </script>
 
 <template>
-    <nav :class="{ 'hidden': !isOpen, 'block': isOpen }"
-        class="lg:block bg-gradient-to-b from-slate-900 to-blue-950 text-white md:shadow-none lg:relative w-64 absolute flex flex-col justify-between overflow-y-auto">
-        <div :class="{ 'hidden': !isOpen, 'block': isOpen }" class="fixed inset-0 bg-black/50"></div>
+    <!-- Overlay (mobile only) -->
+    <div v-if="isOpen" class="fixed inset-0 bg-black/50 lg:hidden z-20" @click="$emit('close')"></div>
+
+    <!-- Sidebar -->
+    <nav :class="[
+        isOpen ? 'block' : 'hidden',
+        // Base (mobile)
+        'fixed top-20 left-0 h-[calc(100vh-5rem)] w-64 bg-gradient-to-b from-slate-900 to-blue-950 text-white flex flex-col justify-between overflow-y-auto z-30',
+        // Desktop (inline)
+        'lg:static lg:block lg:h-auto lg:w-64  lg:shadow-sm lg:overflow-visible'
+    ]">
         <ul class="py-3">
-            <li class="flex items-center relative">
-                <RouterLink
-                    class="no-underline w-full flex items-center px-5 py-3 rounded-md transition-colors"
-                    to="/dashboard"
-                    :class="{ 'bg-white/10 ring-1 ring-white/20 font-semibold': $route.path === '/dashboard', 'hover:bg-white/5': $route.path !== '/dashboard' }">
+            <li>
+                <RouterLink to="/dashboard"
+                    class="no-underline w-full flex items-center px-5 py-3 rounded-md transition-colors" :class="{
+                        'bg-white/10 ring-1 ring-white/20 font-semibold': $route.path === '/dashboard',
+                        'hover:bg-white/5': $route.path !== '/dashboard'
+                    }">
                     <FontAwesomeIcon class="me-3" :icon="faHouse" />
                     <span>Home</span>
                 </RouterLink>
             </li>
-            <li class="flex items-center relative">
-                <RouterLink
-                    class="no-underline w-full flex items-center px-5 py-3 rounded-md transition-colors"
-                    to="/dashboard/users"
-                    :class="{ 'bg-white/10 ring-1 ring-white/20 font-semibold': $route.path === '/dashboard/users', 'hover:bg-white/5': $route.path !== '/dashboard/users' }">
+            <li>
+                <RouterLink to="/dashboard/users"
+                    class="no-underline w-full flex items-center px-5 py-3 rounded-md transition-colors" :class="{
+                        'bg-white/10 ring-1 ring-white/20 font-semibold': $route.path === '/dashboard/users',
+                        'hover:bg-white/5': $route.path !== '/dashboard/users'
+                    }">
                     <FontAwesomeIcon class="me-3" :icon="faUser" />
                     <span>Users</span>
                 </RouterLink>
             </li>
-            <li class="flex items-center relative">
-                <RouterLink
-                    class="no-underline w-full flex items-center px-5 py-3 rounded-md transition-colors"
-                    to="/dashboard/notes"
-                    :class="{ 'bg-white/10 ring-1 ring-white/20 font-semibold': $route.path === '/dashboard/notes', 'hover:bg-white/5': $route.path !== '/dashboard/notes' }">
+            <li>
+                <RouterLink to="/dashboard/notes"
+                    class="no-underline w-full flex items-center px-5 py-3 rounded-md transition-colors" :class="{
+                        'bg-white/10 ring-1 ring-white/20 font-semibold': $route.path === '/dashboard/notes',
+                        'hover:bg-white/5': $route.path !== '/dashboard/notes'
+                    }">
                     <FontAwesomeIcon class="me-3" :icon="faNoteSticky" />
                     <span>Notes</span>
                 </RouterLink>

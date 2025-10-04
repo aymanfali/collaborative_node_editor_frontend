@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 #app {
- 
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -18,7 +17,7 @@
 
 @layer base {
   .dark {
-    --color-text-main: #0d1c29; 
+    --color-text-main: #0d1c29;
     --color-text-sec: #ffffff;
     --color-primary: #223647;
     --color-danger: rgb(255, 58, 58);
@@ -28,12 +27,12 @@
   }
 }
 
-*{
+* {
   scroll-behavior: smooth;
   transition: 0.3s ease-in-out;
 }
 
-body{
+body {
   background-color: var(--color-bg);
 }
 
@@ -41,10 +40,11 @@ body{
   display: none;
 }
 
-.follow-links img, form .icon{
-  filter: brightness(0) saturate(100%) invert(21%) sepia(60%) saturate(5527%) hue-rotate(200deg) brightness(93%) contrast(101%);
+.follow-links img,
+form .icon {
+  filter: brightness(0) saturate(100%) invert(21%) sepia(60%) saturate(5527%)
+    hue-rotate(200deg) brightness(93%) contrast(101%);
 }
-
 
 .ql-editor {
   width: 8.5in;
@@ -53,6 +53,14 @@ body{
   margin: 1rem;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
   background-color: #fff;
+}
+
+/* Optional: make it scale better on very small screens */
+@media (max-width: 900px) {
+  .ql-editor {
+    padding: 0;
+    min-height: 11in; /* Let height adjust */
+  }
 }
 
 .ql-container.ql-snow {
@@ -73,26 +81,25 @@ body{
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
 }
 
-
-@page{
-    margin: 1in;
+@page {
+  margin: 1in;
 }
 
-@media print{
-    body{
-        background: none;
-    }
+@media print {
+  body {
+    background: none;
+  }
 
-    .ql-editor{
-        width: 6.5in;
-        height: 9in;
-        padding: 0;
-        margin: 0;
-        box-shadow: none;
-        align-self: flex-start;
-    }
+  .ql-editor {
+    width: 6.5in;
+    height: 9in;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    align-self: flex-start;
+  }
 
-    .ql-toolbar.ql-snow{
-        display: none;
-    }
+  .ql-toolbar.ql-snow {
+    display: none;
+  }
 }
