@@ -27,10 +27,20 @@
             <!-- Card container -->
             <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
                 <div class="flex flex-col md:flex-row gap-3 mb-4">
-                    <input v-model="title" type="text" placeholder="Note Title"
-                        class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full" />
-
+                    <input
+                        v-model="title"
+                        @input="touched.title = true"
+                        type="text"
+                        placeholder="Note Title"
+                        :aria-invalid="!!titleError || undefined"
+                        :aria-describedby="titleError ? 'note-title-error' : undefined"
+                        :class="[
+                          'bg-white dark:bg-gray-800 border focus:outline-none focus:ring-2 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full',
+                          titleError ? 'border-rose-400 focus:ring-rose-400' : 'border-gray-300 dark:border-gray-700 focus:ring-indigo-500'
+                        ]"
+                    />
                 </div>
+                <p v-if="titleError" id="note-title-error" class="-mt-3 mb-3 text-xs text-rose-500">{{ titleError }}</p>
 
                 <TextEditor v-model="content" />
             </div>
@@ -41,7 +51,7 @@
 
 <script setup>
 import NotesLayout from '@/layouts/NotesLayout.vue';
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import TextEditor from "../../components/TextEditor.vue";
 import api from "../../services/api";
 import { useRouter } from "vue-router";
@@ -52,11 +62,23 @@ import { faArrowLeft, faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
 const title = ref("");
 const content = ref("");
 const loading = ref(false);
+const touched = ref({ title: false });
 const router = useRouter();
 const toast = useToast();
 
+const titleError = computed(() => {
+    if (!touched.value.title) return '';
+    const v = title.value.trim();
+    if (!v) return 'Title is required';
+    if (v.length > 200) return 'Title must be 200 characters or less';
+    return '';
+});
+
 const saveNote = async () => {
-    if (!title.value.trim()) return;
+    if (!title.value.trim()) {
+        touched.value.title = true;
+        return;
+    }
 
     loading.value = true;
     try {

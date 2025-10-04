@@ -19,17 +19,36 @@
             <form @submit.prevent="handleLogin" novalidate>
                 <div class="mb-3">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
-                    <input type="email" v-model="email" placeholder="you@example.com" required autocomplete="email"
-                        class="mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200"
+                    <input
+                        type="email"
+                        v-model="email"
+                        @input="touched.email = true"
+                        placeholder="you@example.com"
+                        required autocomplete="email"
+                        :aria-invalid="!!emailError || undefined"
+                        :aria-describedby="emailError ? 'login-email-error' : undefined"
+                        :class="[
+                          'mt-1 w-full bg-white dark:bg-gray-800 border rounded px-3 py-2 focus:outline-none focus:ring-2 text-slate-700 dark:text-slate-200',
+                          emailError ? 'border-rose-400 focus:ring-rose-400' : 'border-gray-300 dark:border-gray-700 focus:ring-indigo-500'
+                        ]"
                         aria-label="Email" />
+                    <p v-if="emailError" id="login-email-error" class="text-xs text-rose-500 mt-1">{{ emailError }}</p>
                 </div>
 
                 <div class="mb-3">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
                     <div class="relative">
-                        <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Your password"
+                        <input :type="showPassword ? 'text' : 'password'"
+                            v-model="password"
+                            @input="touched.password = true"
+                            placeholder="Your password"
                             required autocomplete="current-password"
-                            class="mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200"
+                            :aria-invalid="!!passwordError || undefined"
+                            :aria-describedby="passwordError ? 'login-password-error' : undefined"
+                            :class="[
+                              'mt-1 w-full bg-white dark:bg-gray-800 border rounded px-3 pr-10 py-2 focus:outline-none focus:ring-2 text-slate-700 dark:text-slate-200',
+                              passwordError ? 'border-rose-400 focus:ring-rose-400' : 'border-gray-300 dark:border-gray-700 focus:ring-indigo-500'
+                            ]"
                             aria-label="Password" />
                         <button type="button" @click="toggleShowPassword"
                             class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -38,8 +57,7 @@
                             <FontAwesomeIcon v-else :icon="faEye" />
                         </button>
                     </div>
-                    <p v-if="password && password.length < 6" class="text-xs text-rose-500 mt-1">Password should be at
-                        least 6 characters.</p>
+                    <p v-if="passwordError" id="login-password-error" class="text-xs text-rose-500 mt-1">{{ passwordError }}</p>
                 </div>
 
                 <div v-if="errorMessage" class="mb-3 text-sm text-rose-600">{{ errorMessage }}</div>
@@ -91,17 +109,32 @@ const password = ref('');
 const showPassword = ref(false);
 const loading = ref(false);
 const errorMessage = ref('');
+const touched = ref({ email: false, password: false });
 
 const toggleShowPassword = () => {
     showPassword.value = !showPassword.value;
 };
 
 const emailIsValid = (val) => /\S+@\S+\.\S+/.test(val);
+const emailError = computed(() => {
+    if (!touched.value.email) return '';
+    const v = email.value.trim();
+    if (!v) return 'Email is required';
+    if (!emailIsValid(v)) return 'Enter a valid email address';
+    return '';
+});
+const passwordError = computed(() => {
+    if (!touched.value.password) return '';
+    if (!password.value) return 'Password is required';
+    if (password.value.length < 6) return 'Password should be at least 6 characters';
+    return '';
+});
 
 const canSubmit = computed(() => emailIsValid(email.value) && password.value.length >= 6);
 
 const handleLogin = async () => {
     if (!canSubmit.value) {
+        touched.value = { email: true, password: true };
         errorMessage.value = 'Please provide a valid email and a password with at least 6 characters.';
         return;
     }
