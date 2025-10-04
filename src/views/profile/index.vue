@@ -117,7 +117,8 @@ async function onFileChange(e) {
                 <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileChange" />
                 <button type="button" @click="chooseFile" :disabled="uploading"
                   class="px-3 py-2 rounded-lg bg-slate-700 hover:bg-slate-800 text-white disabled:opacity-60">
-                  <FontAwesomeIcon class="me-3" :icon="faUpload" />{{ uploading ? 'Uploading...' : 'Upload from device' }}
+                  <FontAwesomeIcon class="me-3" :icon="faUpload" />{{ uploading ? 'Uploading...' : 'Upload from device'
+                  }}
                 </button>
               </div>
             </div>
@@ -159,7 +160,7 @@ async function onFileChange(e) {
 
           <div class="mt-6 flex items-center gap-3">
             <button @click="save" :disabled="saving"
-              class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow disabled:opacity-60">
+              class="inline-flex items-center px-4 py-2 rounded-md bg-slate-800/10 hover:bg-slate-800/20 dark:text-white dark:bg-white/10 dark:hover:bg-white/20 text-sm shadow disabled:opacity-60">
               <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" />{{ saving ? 'Saving...' : 'Save Changes' }}
             </button>
             <router-link to="/"

@@ -88,7 +88,7 @@ const handleLogout = async () => {
 
 <template>
     <div
-        class="relative flex justify-between items-center z-50 bg-gradient-to-r from-slate-900 to-blue-900 text-white border-b border-white/10 p-5 shadow-md">
+        class="relative flex justify-between items-center z-50 bg-gradient-to-r from-slate-900 to-blue-900 text-white border-b border-white/10 py-2 px-6 shadow-md">
         <div class="flex items-center">
             <button @click="$emit('toggle-nav')"
                 class="dash-nav-trigger lg:hidden bg-transparent text-2xl mb-2 me-2 cursor-pointer hover:opacity-80">
@@ -110,22 +110,25 @@ const handleLogout = async () => {
             </router-link>
             <ThemeToggle />
             <div class="avatar flex flex-row-reverse items-center relative">
-                <div v-if="user.avatar" class="w-8 h-8 rounded-full overflow-hidden cursor-pointer ms-3" @click="toggleAccountList">
+                <div v-if="user.avatar" class="w-8 h-8 rounded-full overflow-hidden cursor-pointer ms-3"
+                    @click="toggleAccountList">
                     <img :src="user.avatar" alt="avatar" class="w-full h-full object-cover" />
                 </div>
-                <div v-else class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white cursor-pointer ms-3" @click="toggleAccountList">
+                <div v-else
+                    class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white cursor-pointer ms-3"
+                    @click="toggleAccountList">
                     {{ userInitial }}
                 </div>
                 <span class="cursor-pointer" @click="toggleAccountList">{{ user.name }}</span>
-                <div class="backdrop-blur bg-white/10 text-white p-1 rounded-md absolute top-full right-0 mt-2 shadow-lg w-44 border border-white/10"
+                <div class="backdrop-blur bg-white/10 dark:text-white text-slate-800 p-1 rounded-md absolute top-full right-0 mt-2 shadow-lg w-44 border border-white/10"
                     v-if="isAccountListOpen">
                     <button @click="goProfile"
-                        class="flex justify-start items-center w-full hover:bg-white/10 p-2 cursor-pointer rounded-md">
+                        class="flex justify-start items-center w-full hover:bg-slate-800/10 dark:hover:bg-white/10 p-2 cursor-pointer rounded-md">
                         <FontAwesomeIcon class="me-3" :icon="faUser" />
                         <span>Profile</span>
                     </button>
                     <button @click="handleLogout"
-                        class="flex justify-start items-center w-full text-red-300 hover:bg-white/10 p-2 cursor-pointer rounded-md">
+                        class="flex justify-start items-center w-full text-red-300 hover:bg-slate-800/10 dark:hover:bg-white/10 p-2 cursor-pointer rounded-md">
                         <FontAwesomeIcon class="me-3" :icon="faArrowRightFromBracket" />
                         <span>Logout</span>
                     </button>
