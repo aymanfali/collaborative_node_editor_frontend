@@ -40,6 +40,6 @@ onMounted(async () => {
         { key: 'provider', label: 'Provider' },
         { key: 'role', label: 'Role' },
         { key: 'date', label: 'Date', type: 'date' },
-      ]" />
+      ]" :allowEdit="false" :showDelete="true" :showView="true" :showExport="false" @view="handleView" />
   </section>
 </template>
