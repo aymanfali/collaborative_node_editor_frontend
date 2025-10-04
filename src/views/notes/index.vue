@@ -16,6 +16,13 @@
                 </div>
             </div>
 
+            <div class="flex items-center gap-3 mb-4">
+                <FontAwesomeIcon class="dark:text-white" :icon="faMagnifyingGlass" />
+                <input v-model="search" @input="onSearchInput" type="text"
+                    placeholder="Search notes (title and content)"
+                    class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full" />
+            </div>
+
             <div v-if="loading" class="text-slate-600 dark:text-slate-300">Loading notes...</div>
             <div v-else-if="error" class="text-rose-600">{{ error }}</div>
             <div v-else-if="notes.length === 0" class="text-slate-500 dark:text-slate-400 italic">No notes yet. Create
@@ -38,14 +45,9 @@
                 </li>
             </ul>
 
-            <ConfirmModal v-model:show="isConfirmOpen"
-              title="Delete note"
-              message="Are you sure you want to permanently delete this note? This action cannot be undone."
-              confirmText="Delete"
-              cancelText="Cancel"
-              destructive
-              @confirm="performDelete"
-            />
+            <ConfirmModal v-model:show="isConfirmOpen" title="Delete note"
+                message="Are you sure you want to permanently delete this note? This action cannot be undone."
+                confirmText="Delete" cancelText="Cancel" destructive @confirm="performDelete" />
         </section>
     </NotesLayout>
 </template>
@@ -57,7 +59,7 @@ import { useRouter } from "vue-router";
 import api from "../../services/api";
 import { useToast } from "vue-toastification";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const notes = ref([]);
@@ -65,11 +67,13 @@ const loading = ref(true);
 const error = ref(null);
 const router = useRouter();
 const toast = useToast();
+const search = ref('');
+let searchTimer = null;
 
-const fetchNotes = async () => {
+const fetchNotes = async (q = '') => {
     loading.value = true;
     try {
-        const res = await api.get("/notes");
+        const res = await api.get("/notes", { params: q ? { q } : {} });
         notes.value = res.data;
         error.value = null;
     } catch (err) {
@@ -80,6 +84,11 @@ const fetchNotes = async () => {
         loading.value = false;
     }
 };
+
+function onSearchInput() {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => fetchNotes(search.value.trim()), 300);
+}
 
 // confirmation flow
 const isConfirmOpen = ref(false);
@@ -110,5 +119,5 @@ const performDelete = async () => {
 
 const goToCreate = () => router.push({ name: "note-create" });
 
-onMounted(fetchNotes);
+onMounted(() => fetchNotes());
 </script>
