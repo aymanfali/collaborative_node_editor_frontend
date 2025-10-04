@@ -20,14 +20,40 @@
                 <form @submit.prevent="handleRegister" novalidate>
                     <div class="mb-3">
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Full name</label>
-                        <input type="text" v-model="name" placeholder="Your full name" required autocomplete="name"
-                            class="mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200" />
+                        <input
+                            type="text"
+                            v-model="name"
+                            @input="touched.name = true"
+                            placeholder="Your full name"
+                            required
+                            autocomplete="name"
+                            :aria-invalid="!!nameError || undefined"
+                            :aria-describedby="nameError ? 'name-error' : undefined"
+                            :class="[
+                              'mt-1 w-full bg-white dark:bg-gray-800 border rounded px-3 py-2 focus:outline-none focus:ring-2 text-slate-700 dark:text-slate-200',
+                              nameError ? 'border-rose-400 focus:ring-rose-400' : 'border-gray-300 dark:border-gray-700 focus:ring-indigo-500'
+                            ]"
+                        />
+                        <p v-if="nameError" id="name-error" class="text-xs text-rose-500 mt-1">{{ nameError }}</p>
                     </div>
 
                     <div class="mb-3">
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
-                        <input type="email" v-model="email" placeholder="you@example.com" required autocomplete="email"
-                            class="mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200" />
+                        <input
+                            type="email"
+                            v-model="email"
+                            @input="touched.email = true"
+                            placeholder="you@example.com"
+                            required
+                            autocomplete="email"
+                            :aria-invalid="!!emailError || undefined"
+                            :aria-describedby="emailError ? 'email-error' : undefined"
+                            :class="[
+                              'mt-1 w-full bg-white dark:bg-gray-800 border rounded px-3 py-2 focus:outline-none focus:ring-2 text-slate-700 dark:text-slate-200',
+                              emailError ? 'border-rose-400 focus:ring-rose-400' : 'border-gray-300 dark:border-gray-700 focus:ring-indigo-500'
+                            ]"
+                        />
+                        <p v-if="emailError" id="email-error" class="text-xs text-rose-500 mt-1">{{ emailError }}</p>
                     </div>
 
                     <div class="mb-3">
@@ -36,16 +62,22 @@
                             <input
                                 :type="showPassword ? 'text' : 'password'"
                                 v-model="password"
+                                @input="touched.password = true"
                                 placeholder="Create a password"
                                 required autocomplete="new-password"
-                                class="mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200"
+                                :aria-invalid="!!passwordError || undefined"
+                                :aria-describedby="passwordError ? 'password-error' : undefined"
+                                :class="[
+                                  'mt-1 w-full bg-white dark:bg-gray-800 border rounded px-3 pr-10 py-2 focus:outline-none focus:ring-2 text-slate-700 dark:text-slate-200',
+                                  passwordError ? 'border-rose-400 focus:ring-rose-400' : 'border-gray-300 dark:border-gray-700 focus:ring-indigo-500'
+                                ]"
                             />
                             <button type="button" @click="toggleShowPassword" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800" :aria-pressed="showPassword" aria-label="Toggle password visibility">
                                 <FontAwesomeIcon v-if="showPassword" :icon="faEyeSlash" />
                                 <FontAwesomeIcon v-else :icon="faEye" />
                             </button>
                         </div>
-                        <p v-if="password && password.length < 6" class="text-xs text-rose-500 mt-1">Password must be at least 6 characters.</p>
+                        <p v-if="passwordError" id="password-error" class="text-xs text-rose-500 mt-1">{{ passwordError }}</p>
                     </div>
 
                     <div v-if="errorMessage" class="mb-3 text-sm text-rose-600">{{ errorMessage }}</div>
@@ -97,16 +129,46 @@ const password = ref('');
 const loading = ref(false);
 const errorMessage = ref('');
 const showPassword = ref(false);
+const touched = ref({ name: false, email: false, password: false });
 
 const toggleShowPassword = () => {
     showPassword.value = !showPassword.value;
 };
 
 const emailIsValid = (val) => /\S+@\S+\.\S+/.test(val);
-const canSubmit = computed(() => name.value.trim().length > 1 && emailIsValid(email.value) && password.value.length >= 6);
+const nameError = computed(() => {
+    if (!touched.value.name) return '';
+    const v = name.value.trim();
+    if (!v) return 'Name is required';
+    if (v.length < 3) return 'Name must be at least 3 characters';
+    return '';
+});
+const emailError = computed(() => {
+    if (!touched.value.email) return '';
+    const v = email.value.trim();
+    if (!v) return 'Email is required';
+    if (!emailIsValid(v)) return 'Enter a valid email address';
+    return '';
+});
+const passwordError = computed(() => {
+    if (!touched.value.password) return '';
+    if (!password.value) return 'Password is required';
+    if (password.value.length < 6) return 'Password must be at least 6 characters';
+    return '';
+});
+const canSubmit = computed(() => {
+    const vName = name.value.trim();
+    const vEmail = email.value.trim();
+    return (
+        vName.length >= 3 &&
+        emailIsValid(vEmail) &&
+        password.value.length >= 6
+    );
+});
 
 const handleRegister = async () => {
     if (!canSubmit.value) {
+        touched.value = { name: true, email: true, password: true };
         errorMessage.value = 'Please fill all fields with valid values.';
         return;
     }
