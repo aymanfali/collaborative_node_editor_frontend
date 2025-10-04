@@ -10,12 +10,10 @@
               <p class="text-white/70 text-sm">Manage content and collaborators</p>
             </div>
             <div class="flex gap-2 flex-wrap justify-end">
-              <span v-if="!canEdit" class="px-3 py-2 rounded bg-white/10 text-white text-sm">View
-                only</span>
+              <span v-if="!canEdit" class="px-3 py-2 rounded bg-white/10 text-white text-sm">View only</span>
               <button @click="saveNote" :disabled="!canEdit || !isChanged || !note.title.trim() || saving"
                 class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow disabled:opacity-60">
-                <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" /> {{ saving ? 'Saving...' : 'Save'
-                }}
+                <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" /> {{ saving ? 'Saving...' : 'Save' }}
               </button>
               <!-- Export buttons -->
               <div class="flex items-center gap-2 bg-white/10 rounded-md p-1">
@@ -52,7 +50,20 @@
         <div v-else>
           <input v-model="note.title" :disabled="!canEdit" type="text" placeholder="Note Title"
             class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full mb-3 disabled:bg-gray-100 disabled:text-gray-500" />
-          <TextEditor v-model="note.content" :read-only="!canEdit" />
+
+          <!-- Presence bar -->
+          <div class="flex items-center gap-2 mb-2" v-if="presence.length">
+            <div v-for="p in presence" :key="presenceKey(p)" class="flex items-center gap-1">
+              <span class="inline-flex items-center justify-center rounded-full text-white text-xs w-6 h-6"
+                :style="{ backgroundColor: presenceColor(p) || '#64748b' }" :title="presenceDisplayName(p)">
+                {{ presenceInitials(p) }}
+              </span>
+            </div>
+            <span class="text-xs text-slate-500 dark:text-slate-400">{{ presence.length }} online</span>
+          </div>
+
+          <TextEditor v-model="note.content" :read-only="!canEdit" :note-id="route.params.id" :user="currentUser"
+            @presence="onPresence" />
 
           <!-- Collaborators Panel -->
           <div
@@ -71,17 +82,18 @@
                 <option value="edit">Edit</option>
               </select>
               <button @click="addOrUpdateCollaborator" :disabled="!inviteEmail"
-                class="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm shadow disabled:opacity-60">Invite
-                / Update</button>
+                class="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm shadow disabled:opacity-60">
+                Invite / Update
+              </button>
             </div>
 
-            <div v-if="collaborators.length === 0" class="text-sm text-slate-500 dark:text-slate-400">No
-              collaborators yet.</div>
+            <div v-if="collaborators.length === 0" class="text-sm text-slate-500 dark:text-slate-400">
+              No collaborators yet.
+            </div>
             <ul class="divide-y divide-gray-200 dark:divide-gray-800">
-              <li v-for="c in collaborators" :key="c.user._id" class="py-3 flex items-center justify-between">
+              <li v-for="c in collaborators" :key="normId(c.user)" class="py-3 flex items-center justify-between">
                 <div>
-                  <div class="font-medium text-slate-800 dark:text-slate-100">{{ c.user.name ||
-                    c.user.email }}</div>
+                  <div class="font-medium text-slate-800 dark:text-slate-100">{{ c.user.name || c.user.email }}</div>
                   <div class="text-sm text-slate-500 dark:text-slate-400">{{ c.user.email }}</div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -91,8 +103,10 @@
                     <option value="view">View</option>
                     <option value="edit">Edit</option>
                   </select>
-                  <button v-if="canManageCollabs" @click="removeCollaborator(c.user._id)"
-                    class="px-3 py-2 rounded-md border border-rose-300 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">Remove</button>
+                  <button v-if="canManageCollabs" @click="removeCollaborator(normId(c.user))"
+                    class="px-3 py-2 rounded-md border border-rose-300 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">
+                    Remove
+                  </button>
                 </div>
               </li>
             </ul>
@@ -129,83 +143,123 @@ const loadingCollabs = ref(false);
 const inviteEmail = ref("");
 const invitePermission = ref("view");
 const currentUser = ref(null);
+const presence = ref([]);
+const serverCanEdit = ref(false);
+const serverCanManage = ref(false);
 
-const canManageCollabs = computed(() => (currentUser.value?.role === 'admin') || (note.owner && String(note.owner) === String(currentUser.value?._id)));
-const canEdit = computed(() => {
+// Normalize IDs
+function normId(u) {
+  if (!u) return '';
+  if (typeof u === 'string' || typeof u === 'number') return String(u);
+  return String(u._id || u.id || u.userId || u.email || u.username || '');
+}
+
+// Normalize collaborator list
+function normalizeCollaborators(list = []) {
+  return list.map(item => {
+    const permission = item.permission || item.perm || 'view';
+    let user = item.user || item.userId || item.email || item || null;
+    if (typeof user === 'string') {
+      user = user.includes('@') ? { email: user } : { _id: user };
+    }
+    return {
+      user: {
+        _id: user._id || user.id || user.userId || null,
+        email: user.email || null,
+        name: user.name || null,
+      },
+      permission
+    };
+  });
+}
+
+// Permission checks
+const canManageCollabs = computed(() => {
+  if (serverCanManage.value) return true;
   if (currentUser.value?.role === 'admin') return true;
-  if (note.owner && String(note.owner) === String(currentUser.value?._id)) return true;
-  const me = collaborators.value.find(c => String(c.user?._id) === String(currentUser.value?._id));
+  const meId = normId(currentUser.value);
+  const ownerId = normId(note.owner);
+  return !!ownerId && ownerId === meId;
+});
+
+const canEdit = computed(() => {
+  if (serverCanEdit.value) return true;
+  if (currentUser.value?.role === 'admin') return true;
+  const meId = normId(currentUser.value);
+  const ownerId = normId(note.owner);
+  if (ownerId && ownerId === meId) return true;
+  const meEmail = (currentUser.value?.email || currentUser.value?.username || '').toLowerCase();
+  const me = collaborators.value.find(c => {
+    const collabId = normId(c.user);
+    const collabEmail = (c.user?.email || '').toLowerCase();
+    return ((collabId && collabId === meId) || (meEmail && collabEmail && collabEmail === meEmail));
+  });
   return !!me && me.permission === 'edit';
 });
 
-// Fetch note from backend
+// Fetch note
 const fetchNote = async () => {
-    loading.value = true;
-    try {
-        const res = await api.get(`/notes/${route.params.id}`);
-        note.title = res.data.title;
-        note.content = res.data.content || "";
-        note.owner = res.data.owner;
-        originalNote.title = res.data.title;
-        originalNote.content = res.data.content || "";
-        error.value = null;
-        await fetchCollaborators();
-    } catch (err) {
-        console.error(err);
-        error.value = "Failed to fetch note.";
-        toast.error("Failed to fetch note.");
-    } finally {
-        loading.value = false;
+  loading.value = true;
+  try {
+    const res = await api.get(`/notes/${route.params.id}`);
+    note.title = res.data.title;
+    note.content = res.data.content || "";
+    note.owner = res.data.owner;
+    originalNote.title = res.data.title;
+    originalNote.content = res.data.content || "";
+    error.value = null;
+    // read server permission meta
+    const meta = res.data?.__meta || {};
+    serverCanEdit.value = !!meta.canEdit;
+    serverCanManage.value = !!meta.canManage;
+    // Only fetch collaborators if the user can manage collaborators (owner/admin)
+    if (serverCanManage.value) {
+      await fetchCollaborators();
+    } else {
+      collaborators.value = [];
     }
+  } catch (err) {
+    console.error(err);
+    error.value = "Failed to fetch note.";
+    toast.error("Failed to fetch note.");
+  } finally {
+    loading.value = false;
+  }
 };
 
-// Watch for changes to enable Save button
-watch(
-    () => [note.title, note.content],
-    ([newTitle, newContent]) => {
-        isChanged.value =
-            newTitle !== originalNote.title || newContent !== originalNote.content;
-    }
-);
-
+// Save note
 const saveNote = async () => {
-    if (!canEdit.value || !note.title.trim() || !isChanged.value) return;
-
-    saving.value = true;
-    error.value = null;
-
-    try {
-        const res = await api.put(`/notes/${route.params.id}`, {
-            title: note.title,
-            content: note.content,
-        });
-        // Update originalNote to reflect saved state
-        originalNote.title = res.data.title;
-        originalNote.content = res.data.content || "";
-        isChanged.value = false;
-
-        toast.success("Note saved successfully!");
-    } catch (err) {
-        console.error(err);
-        error.value = "Failed to save note.";
-        toast.error("Failed to save note.");
-    } finally {
-        saving.value = false;
-    }
+  if (!canEdit.value || !note.title.trim() || !isChanged.value) return;
+  saving.value = true;
+  error.value = null;
+  try {
+    const res = await api.put(`/notes/${route.params.id}`, {
+      title: note.title,
+      content: note.content,
+    });
+    originalNote.title = res.data.title;
+    originalNote.content = res.data.content || "";
+    isChanged.value = false;
+    toast.success("Note saved successfully!");
+  } catch (err) {
+    console.error(err);
+    error.value = "Failed to save note.";
+    toast.error("Failed to save note.");
+  } finally {
+    saving.value = false;
+  }
 };
 
 const goBack = () => router.push({ name: "notes" });
 
+// Collaborators
 async function fetchCollaborators() {
   try {
     loadingCollabs.value = true;
     const res = await api.get(`/notes/${route.params.id}/collaborators`);
-    collaborators.value = (res.data || []).map(c => ({
-      user: c.user,
-      permission: c.permission
-    }));
-  } catch (err) {
-    // ignore for viewers without access
+    collaborators.value = normalizeCollaborators(res.data || []);
+  } catch (_) {
+    // silent for viewers without access
   } finally {
     loadingCollabs.value = false;
   }
@@ -213,8 +267,10 @@ async function fetchCollaborators() {
 
 async function addOrUpdateCollaborator() {
   try {
-    const res = await api.post(`/notes/${route.params.id}/collaborators`, { email: inviteEmail.value, permission: invitePermission.value });
-    collaborators.value = res.data || [];
+    const res = await api.post(`/notes/${route.params.id}/collaborators`, {
+      email: inviteEmail.value, permission: invitePermission.value
+    });
+    collaborators.value = normalizeCollaborators(res.data || []);
     inviteEmail.value = "";
     toast.success('Collaborator updated');
   } catch (err) {
@@ -224,8 +280,10 @@ async function addOrUpdateCollaborator() {
 
 async function onChangePermission(c, perm) {
   try {
-    const res = await api.post(`/notes/${route.params.id}/collaborators`, { email: c.user.email, permission: perm });
-    collaborators.value = res.data || [];
+    const res = await api.post(`/notes/${route.params.id}/collaborators`, {
+      email: c.user.email, permission: perm
+    });
+    collaborators.value = normalizeCollaborators(res.data || []);
     toast.success('Permission updated');
   } catch (err) {
     toast.error(err?.response?.data?.message || 'Failed to update permission');
@@ -235,20 +293,75 @@ async function onChangePermission(c, perm) {
 async function removeCollaborator(userId) {
   try {
     await api.delete(`/notes/${route.params.id}/collaborators/${userId}`);
-    collaborators.value = collaborators.value.filter(c => String(c.user._id) !== String(userId));
+    collaborators.value = collaborators.value.filter(c => normId(c.user) !== String(userId));
     toast.success('Collaborator removed');
   } catch (err) {
     toast.error(err?.response?.data?.message || 'Failed to remove');
   }
 }
 
-onMounted(async () => {
-  try {
-    currentUser.value = JSON.parse(localStorage.getItem('activeUser')) || null;
-  } catch (_) { currentUser.value = null; }
-  await fetchNote();
+// Watch changes
+watch(() => [note.title, note.content], ([newTitle, newContent]) => {
+  isChanged.value = newTitle !== originalNote.title || newContent !== originalNote.content;
 });
 
+// Presence
+function onPresence(list) {
+  presence.value = Array.isArray(list) ? list : [];
+}
+
+// Presence helpers
+function presenceKey(p) {
+  // prefer userId then email then fallback to name
+  if (!p) return JSON.stringify(p);
+  return p.userId || p.id || p.email || (p.name ? p.name.replace(/\s+/g, '_') : JSON.stringify(p));
+}
+
+function presenceDisplayName(p) {
+  if (!p) return 'User';
+  return p.name || p.displayName || p.email || 'User';
+}
+
+function presenceInitials(p) {
+  const name = presenceDisplayName(p) || 'User';
+  // extract letters and take first 2
+  const clean = String(name).replace(/[^A-Za-z ]/g, '').trim();
+  if (!clean) return 'U';
+  const parts = clean.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return parts[0].slice(0, 2).toUpperCase();
+}
+
+function presenceColor(p) {
+  return p && (p.color || p.col || p.colorHex) ? (p.color || p.col || p.colorHex) : null;
+}
+
+// Debug
+watch(
+  () => ({ collabs: collaborators.value, me: currentUser.value, owner: note.owner }),
+  (state) => {
+    try {
+      const meId = normId(state.me);
+      const ownerId = normId(state.owner);
+      const meEmail = (state.me?.email || state.me?.username || '').toLowerCase();
+      const matched = (collaborators.value || []).find(c => {
+        const collabId = normId(c.user);
+        const collabEmail = (c.user?.email || '').toLowerCase();
+        return (collabId && collabId === meId) || (meEmail && collabEmail && collabEmail === meEmail);
+      });
+      console.debug('[notes/show] canEdit debug', {
+        meId,
+        meEmail,
+        ownerId,
+        matchedCollab: matched ? { id: normId(matched.user), email: matched.user?.email, permission: matched.permission } : null,
+        canEdit: !!(currentUser.value?.role === 'admin' || (ownerId && ownerId === meId) || (matched && matched.permission === 'edit')),
+      });
+    } catch (_) { }
+  },
+  { deep: true, immediate: true }
+);
+
+// Export
 function sanitizeFilename(name = 'note') {
   return String(name)
     .trim()
@@ -279,4 +392,12 @@ async function downloadExport(ext) {
     toast.error(err?.response?.data?.message || 'Failed to export')
   }
 }
+
+// Init
+onMounted(async () => {
+  try {
+    currentUser.value = JSON.parse(localStorage.getItem('activeUser')) || null;
+  } catch (_) { currentUser.value = null; }
+  await fetchNote();
+});
 </script>
