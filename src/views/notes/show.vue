@@ -1,90 +1,106 @@
 <template>
-    <NotesLayout>
-        <section>
-            <!-- Gradient page header -->
-            <div class="mb-5">
-                <div class="rounded-xl bg-gradient-to-r from-slate-900 to-blue-900 text-white p-5 shadow">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <div>
-                            <h1 class="text-2xl font-semibold">Edit Note</h1>
-                            <p class="text-white/70 text-sm">Manage content and collaborators</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <span v-if="!canEdit" class="px-3 py-2 rounded bg-white/10 text-white text-sm">View
-                                only</span>
-                            <button @click="saveNote" :disabled="!canEdit || !isChanged || !note.title.trim() || saving"
-                                class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow disabled:opacity-60">
-                                <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" /> {{ saving ? 'Saving...' : 'Save'
-                                }}
-                            </button>
-                            <button @click="goBack"
-                                class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow">
-                                <FontAwesomeIcon class="me-3" :icon="faArrowLeft" /> Back to Notes
-                            </button>
-                        </div>
-                    </div>
-                </div>
+  <NotesLayout>
+    <section>
+      <!-- Gradient page header -->
+      <div class="mb-5">
+        <div class="rounded-xl bg-gradient-to-r from-slate-900 to-blue-900 text-white p-5 shadow">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h1 class="text-2xl font-semibold">Edit Note</h1>
+              <p class="text-white/70 text-sm">Manage content and collaborators</p>
+            </div>
+            <div class="flex gap-2 flex-wrap justify-end">
+              <span v-if="!canEdit" class="px-3 py-2 rounded bg-white/10 text-white text-sm">View
+                only</span>
+              <button @click="saveNote" :disabled="!canEdit || !isChanged || !note.title.trim() || saving"
+                class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow disabled:opacity-60">
+                <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" /> {{ saving ? 'Saving...' : 'Save'
+                }}
+              </button>
+              <!-- Export buttons -->
+              <div class="flex items-center gap-2 bg-white/10 rounded-md p-1">
+                <button @click="downloadExport('md')" :disabled="loading"
+                  class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow disabled:opacity-60"
+                  title="Export Markdown">
+                  <FontAwesomeIcon class="me-3" :icon="faMarkdown" />MD
+                </button>
+                <button @click="downloadExport('html')" :disabled="loading"
+                  class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow disabled:opacity-60"
+                  title="Export HTML">
+                  <FontAwesomeIcon class="me-3" :icon="faHtml5" />HTML
+                </button>
+                <button @click="downloadExport('pdf')" :disabled="loading"
+                  class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow disabled:opacity-60"
+                  title="Export PDF">
+                  <FontAwesomeIcon class="me-3" :icon="faFilePdf" />PDF
+                </button>
+              </div>
+              <button @click="goBack"
+                class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow">
+                <FontAwesomeIcon class="me-3" :icon="faArrowLeft" /> Back to Notes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card container for editor and collaborators -->
+      <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
+        <div v-if="loading" class="text-slate-600 dark:text-slate-300">Loading note...</div>
+        <div v-else-if="error" class="text-rose-600">{{ error }}</div>
+
+        <div v-else>
+          <input v-model="note.title" :disabled="!canEdit" type="text" placeholder="Note Title"
+            class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full mb-3 disabled:bg-gray-100 disabled:text-gray-500" />
+          <TextEditor v-model="note.content" :read-only="!canEdit" />
+
+          <!-- Collaborators Panel -->
+          <div
+            class="mt-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-lg font-medium text-slate-800 dark:text-slate-100">Collaborators</h2>
+              <span class="text-sm text-slate-500 dark:text-slate-400" v-if="loadingCollabs">Loading...</span>
             </div>
 
-            <!-- Card container for editor and collaborators -->
-            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
-                <div v-if="loading" class="text-slate-600 dark:text-slate-300">Loading note...</div>
-                <div v-else-if="error" class="text-rose-600">{{ error }}</div>
-
-                <div v-else>
-                    <input v-model="note.title" :disabled="!canEdit" type="text" placeholder="Note Title"
-                        class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full mb-3 disabled:bg-gray-100 disabled:text-gray-500" />
-                    <TextEditor v-model="note.content" :read-only="!canEdit" />
-
-                    <!-- Collaborators Panel -->
-                    <div
-                        class="mt-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm">
-                        <div class="flex items-center justify-between mb-3">
-                            <h2 class="text-lg font-medium text-slate-800 dark:text-slate-100">Collaborators</h2>
-                            <span class="text-sm text-slate-500 dark:text-slate-400"
-                                v-if="loadingCollabs">Loading...</span>
-                        </div>
-
-                        <div v-if="canManageCollabs" class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-2">
-                            <input v-model="inviteEmail" type="email" placeholder="Invite by email"
-                                class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full" />
-                            <select v-model="invitePermission"
-                                class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full">
-                                <option value="view">View</option>
-                                <option value="edit">Edit</option>
-                            </select>
-                            <button @click="addOrUpdateCollaborator" :disabled="!inviteEmail"
-                                class="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm shadow disabled:opacity-60">Invite
-                                / Update</button>
-                        </div>
-
-                        <div v-if="collaborators.length === 0" class="text-sm text-slate-500 dark:text-slate-400">No
-                            collaborators yet.</div>
-                        <ul class="divide-y divide-gray-200 dark:divide-gray-800">
-                            <li v-for="c in collaborators" :key="c.user._id"
-                                class="py-3 flex items-center justify-between">
-                                <div>
-                                    <div class="font-medium text-slate-800 dark:text-slate-100">{{ c.user.name ||
-                                        c.user.email }}</div>
-                                    <div class="text-sm text-slate-500 dark:text-slate-400">{{ c.user.email }}</div>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <select :disabled="!canManageCollabs"
-                                        class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded"
-                                        :value="c.permission" @change="onChangePermission(c, $event.target.value)">
-                                        <option value="view">View</option>
-                                        <option value="edit">Edit</option>
-                                    </select>
-                                    <button v-if="canManageCollabs" @click="removeCollaborator(c.user._id)"
-                                        class="px-3 py-2 rounded-md border border-rose-300 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">Remove</button>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+            <div v-if="canManageCollabs" class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-2">
+              <input v-model="inviteEmail" type="email" placeholder="Invite by email"
+                class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full" />
+              <select v-model="invitePermission"
+                class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full">
+                <option value="view">View</option>
+                <option value="edit">Edit</option>
+              </select>
+              <button @click="addOrUpdateCollaborator" :disabled="!inviteEmail"
+                class="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm shadow disabled:opacity-60">Invite
+                / Update</button>
             </div>
-        </section>
-    </NotesLayout>
+
+            <div v-if="collaborators.length === 0" class="text-sm text-slate-500 dark:text-slate-400">No
+              collaborators yet.</div>
+            <ul class="divide-y divide-gray-200 dark:divide-gray-800">
+              <li v-for="c in collaborators" :key="c.user._id" class="py-3 flex items-center justify-between">
+                <div>
+                  <div class="font-medium text-slate-800 dark:text-slate-100">{{ c.user.name ||
+                    c.user.email }}</div>
+                  <div class="text-sm text-slate-500 dark:text-slate-400">{{ c.user.email }}</div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <select :disabled="!canManageCollabs"
+                    class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded"
+                    :value="c.permission" @change="onChangePermission(c, $event.target.value)">
+                    <option value="view">View</option>
+                    <option value="edit">Edit</option>
+                  </select>
+                  <button v-if="canManageCollabs" @click="removeCollaborator(c.user._id)"
+                    class="px-3 py-2 rounded-md border border-rose-300 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">Remove</button>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </NotesLayout>
 </template>
 
 <script setup>
@@ -95,7 +111,8 @@ import api from "../../services/api";
 import TextEditor from "../../components/TextEditor.vue";
 import { useToast } from "vue-toastification";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faArrowLeft, faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faFilePdf, faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
+import { faHtml5, faMarkdown } from '@fortawesome/free-brands-svg-icons';
 
 const route = useRoute();
 const router = useRouter();
@@ -231,4 +248,35 @@ onMounted(async () => {
   } catch (_) { currentUser.value = null; }
   await fetchNote();
 });
+
+function sanitizeFilename(name = 'note') {
+  return String(name)
+    .trim()
+    .replace(/[\n\r\t]/g, ' ')
+    .replace(/[^a-zA-Z0-9 _.-]/g, '')
+    .replace(/\s+/g, '_')
+    .substring(0, 100) || 'note'
+}
+
+async function downloadExport(ext) {
+  try {
+    if (!route?.params?.id) return;
+    const url = `/notes/${route.params.id}/export.${ext}`
+    const res = await api.get(url, { responseType: 'blob' })
+    const blob = new Blob([res.data], { type: res.headers['content-type'] || 'application/octet-stream' })
+    const cd = res.headers['content-disposition'] || ''
+    const match = /filename\s*=\s*"?([^";]+)"?/i.exec(cd)
+    const fallback = `${sanitizeFilename(note.title || 'note')}.${ext}`
+    const fileName = match?.[1] || fallback
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    setTimeout(() => URL.revokeObjectURL(link.href), 2000)
+  } catch (err) {
+    toast.error(err?.response?.data?.message || 'Failed to export')
+  }
+}
 </script>

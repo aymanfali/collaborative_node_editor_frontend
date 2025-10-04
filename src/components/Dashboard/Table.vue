@@ -1,15 +1,22 @@
 <script setup>
-import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faEye, faPen, faTrash, faDownload, faFilePdf } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, onBeforeUnmount, reactive, ref, watch } from 'vue'
+import api from '@/services/api.js'
+import { faHtml5, faMarkdown } from '@fortawesome/free-brands-svg-icons'
 
 const props = defineProps({
-  headers: { type: Array, required: true },
-  items: { type: Array, required: true },
-  showActions: { type: Boolean, default: true },
-  allowEdit: { type: Boolean, default: true },
-  itemsPerPage: { type: Number, default: 5 },
-  filterableColumns: { type: Array, default: () => [] }
+    headers: { type: Array, required: true },
+    items: { type: Array, required: true },
+    showActions: { type: Boolean, default: true },
+    allowEdit: { type: Boolean, default: true },
+    itemsPerPage: { type: Number, default: 5 },
+    filterableColumns: { type: Array, default: () => [] },
+    // Granular visibility controls
+    showView: { type: Boolean, default: true },
+    showEdit: { type: Boolean, default: true },
+    showDelete: { type: Boolean, default: true },
+    showExport: { type: Boolean, default: true },
 })
 
 const emit = defineEmits(['edit', 'delete', 'view'])
@@ -18,68 +25,124 @@ const currentPage = ref(1)
 const filters = reactive({})
 
 function initFilters() {
-  // reset and initialize keys to empty strings
-  Object.keys(filters).forEach(k => delete filters[k])
-  props.filterableColumns.forEach(col => {
-    if (col?.key) filters[col.key] = ''
-  })
+    // reset and initialize keys to empty strings
+    Object.keys(filters).forEach(k => delete filters[k])
+    props.filterableColumns.forEach(col => {
+        if (col?.key) filters[col.key] = ''
+    })
 }
 
 onMounted(() => {
-  initFilters()
+    initFilters()
 })
 
 watch(() => props.filterableColumns, () => {
-  initFilters()
+    initFilters()
 })
 
 const filterItems = computed(() => {
-  if (!Array.isArray(props.items)) return []
-  if (!props.filterableColumns?.length) return props.items
-  return props.items.filter(item => {
-    return props.filterableColumns.every(filterConfig => {
-      const filterValue = filters[filterConfig.key]
-      if (!filterValue) return true
-      const itemValue = item[filterConfig.key]
-      if (filterConfig.type === 'date') {
-        try {
-          const filteredItem = new Date(itemValue).setHours(0, 0, 0, 0)
-          const dateFilter = new Date(filterValue).setHours(0, 0, 0, 0)
-          return filteredItem === dateFilter
-        } catch {
-          return false
-        }
-      }
-      return itemValue && itemValue.toString().toLowerCase().includes(filterValue.toLowerCase())
+    if (!Array.isArray(props.items)) return []
+    if (!props.filterableColumns?.length) return props.items
+    return props.items.filter(item => {
+        return props.filterableColumns.every(filterConfig => {
+            const filterValue = filters[filterConfig.key]
+            if (!filterValue) return true
+            const itemValue = item[filterConfig.key]
+            if (filterConfig.type === 'date') {
+                try {
+                    const filteredItem = new Date(itemValue).setHours(0, 0, 0, 0)
+                    const dateFilter = new Date(filterValue).setHours(0, 0, 0, 0)
+                    return filteredItem === dateFilter
+                } catch {
+                    return false
+                }
+            }
+            return itemValue && itemValue.toString().toLowerCase().includes(filterValue.toLowerCase())
+        })
     })
-  })
 })
 
 const totalPages = computed(() => Math.max(1, Math.ceil((filterItems.value.length || 0) / props.itemsPerPage)))
 
 const paginatedItems = computed(() => {
-  const start = (currentPage.value - 1) * props.itemsPerPage
-  const end = start + props.itemsPerPage
-  return filterItems.value.slice(start, end)
+    const start = (currentPage.value - 1) * props.itemsPerPage
+    const end = start + props.itemsPerPage
+    return filterItems.value.slice(start, end)
+})
+
+const hasAnyActions = computed(() => {
+    // showActions prop must be true and at least one specific action flag enabled
+    return props.showActions && (props.showView || (props.allowEdit && props.showEdit) || props.showDelete || props.showExport)
 })
 
 // Keep currentPage in range when filters/items change
 watch(filterItems, () => {
-  if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
-  if (currentPage.value < 1) currentPage.value = 1
+    if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
+    if (currentPage.value < 1) currentPage.value = 1
 })
 
 function handleEdit(item) { emit('edit', item) }
 function handleDelete(item) { emit('delete', item) }
 function handleView(item) { emit('view', item) }
 
+function sanitizeFilename(name = 'note') {
+    return String(name)
+        .trim()
+        .replace(/[\n\r\t]/g, ' ')
+        .replace(/[^a-zA-Z0-9 _.-]/g, '')
+        .replace(/\s+/g, '_')
+        .substring(0, 100) || 'note'
+}
+
+async function downloadExport(item, ext) {
+    try {
+        const id = item?._id || item?.id
+        if (!id) return
+        const url = `/notes/${id}/export.${ext}`
+        const res = await api.get(url, { responseType: 'blob' })
+        const blob = new Blob([res.data], { type: res.headers['content-type'] || 'application/octet-stream' })
+        // Try to extract filename from content-disposition
+        const cd = res.headers['content-disposition'] || ''
+        const match = /filename\s*=\s*"?([^";]+)"?/i.exec(cd)
+        const fallback = `${sanitizeFilename(item?.title || 'note')}.${ext}`
+        const fileName = match?.[1] || fallback
+        const link = document.createElement('a')
+        link.href = URL.createObjectURL(blob)
+        link.download = fileName
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+        setTimeout(() => URL.revokeObjectURL(link.href), 2000)
+    } catch (_) { }
+}
+
+// track which row (id or index) currently has the export dropdown open
+const openExportFor = ref(null)
+
+function toggleExport(id, event) {
+    // prevent global click handler from immediately closing when toggling
+    if (event && event.stopPropagation) event.stopPropagation()
+    openExportFor.value = openExportFor.value === id ? null : id
+}
+
+function handleExport(item, ext) {
+    // call existing download helper and close the dropdown
+    downloadExport(item, ext)
+    openExportFor.value = null
+}
+
+// global click listener to close any open export dropdown when clicking outside
+const _closeExportListener = () => { openExportFor.value = null }
+onMounted(() => document.addEventListener('click', _closeExportListener))
+onBeforeUnmount(() => document.removeEventListener('click', _closeExportListener))
+
 function formatDate(value) {
-  if (!value) return ''
-  try { return new Date(value).toLocaleDateString() } catch { return value }
+    if (!value) return ''
+    try { return new Date(value).toLocaleDateString() } catch { return value }
 }
 
 function isImage(value) {
-  return typeof value === 'string' && (value.startsWith('http') || value.startsWith('/') || value.startsWith('data:image'))
+    return typeof value === 'string' && (value.startsWith('http') || value.startsWith('/') || value.startsWith('data:image'))
 }
 
 function goToPage(page) { if (page >= 1 && page <= totalPages.value) currentPage.value = page }
@@ -122,7 +185,7 @@ function clearFilters() { Object.keys(filters).forEach(k => filters[k] = ''); cu
                             class="px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider">
                             {{ header }}
                         </th>
-                        <th v-if="showActions"
+                        <th v-if="hasAnyActions"
                             class="px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider">
                             Actions
                         </th>
@@ -146,19 +209,54 @@ function clearFilters() { Object.keys(filters).forEach(k => filters[k] = ''); cu
                             </td>
                         </template>
 
-                        <td v-if="showActions" class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                            <button @click="handleView(item)"
+                        <td v-if="hasAnyActions" class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                            <button v-if="showView" @click="handleView(item)"
                                 class="mr-3 cursor-pointer text-indigo-600 hover:text-indigo-700" title="View details">
                                 <FontAwesomeIcon :icon="faEye" />
                             </button>
-                            <button v-if="allowEdit" @click="handleEdit(item)"
+                            <button v-if="allowEdit && showEdit" @click="handleEdit(item)"
                                 class="mr-3 cursor-pointer text-amber-600 hover:text-amber-700" title="Edit">
                                 <FontAwesomeIcon :icon="faPen" />
                             </button>
-                            <button @click="handleDelete(item)" class="cursor-pointer text-rose-600 hover:text-rose-700"
-                                title="Delete">
+                            <button v-if="showDelete" @click="handleDelete(item)"
+                                class="cursor-pointer text-rose-600 hover:text-rose-700" title="Delete">
                                 <FontAwesomeIcon :icon="faTrash" />
                             </button>
+
+                            <div v-if="showExport" class="relative inline-block text-left">
+                                <div class="flex justify-center">
+                                    <button @click="toggleExport(item._id || item.id || itemIndex, $event)"
+                                        type="button"
+                                        class="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-2 py-1 bg-white dark:bg-gray-900 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                        aria-expanded="true" aria-haspopup="true">
+                                        <FontAwesomeIcon :icon="faDownload" />
+                                    </button>
+                                </div>
+
+                                <div v-if="openExportFor === (item._id || item.id || itemIndex)" @click.stop
+                                    class="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-[1000]">
+                                    <div class="py-1">
+                                        <button @click="handleExport(item, 'md')"
+                                            class="w-full text-left px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                            <FontAwesomeIcon class="me-3" :icon="faMarkdown" />Markdown
+                                            (MD)
+                                        </button>
+                                    </div>
+                                    <div class="py-1">
+                                        <button @click="handleExport(item, 'html')"
+                                            class="w-full text-left px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                            <FontAwesomeIcon class="me-3" :icon="faHtml5" />HTML
+                                        </button>
+                                    </div>
+                                    <div class="py-1">
+                                        <button @click="handleExport(item, 'pdf')"
+                                            class="w-full text-left px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                            <FontAwesomeIcon class="me-3" :icon="faFilePdf" />PDF
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr v-if="filterItems.length === 0">

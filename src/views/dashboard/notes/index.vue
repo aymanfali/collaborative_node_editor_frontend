@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import Table from '@/components/Dashboard/Table.vue';
 import api from '@/services/api.js';
 
@@ -14,6 +15,7 @@ type NoteRow = {
 const notes = ref<NoteRow[]>([]);
 const loading = ref(true);
 const error = ref('');
+const router = useRouter();
 
 onMounted(async () => {
   loading.value = true;
@@ -34,18 +36,32 @@ onMounted(async () => {
     loading.value = false;
   }
 });
-</script>
 
+function handleView(item: NoteRow) {
+  if (!item?._id) return;
+  router.push(`/notes/${item._id}`);
+}
+</script>
 <template>
   <section>
     <h1 class="text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-4">Notes</h1>
     <div v-if="loading">Loading...</div>
     <div v-else-if="error" class="text-red-500">{{ error }}</div>
-    <Table v-else :headers="['Title','Owner','Email','Date']" :items="notes" :filterableColumns="[
+    <Table
+      v-else
+      :headers="['Title','Owner','Email','Date']"
+      :items="notes"
+      :filterableColumns="[
         { key: 'title', label: 'Title' },
         { key: 'owner', label: 'Owner' },
         { key: 'email', label: 'Email' },
         { key: 'date', label: 'Date', type: 'date' },
-      ]" />
+      ]"
+      :allowEdit="false"
+      :showDelete="true"
+      :showView="true"
+      :showExport="true"
+      @view="handleView"
+    />
   </section>
 </template>
