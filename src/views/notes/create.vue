@@ -1,28 +1,19 @@
 <template>
     <NotesLayout>
         <section>
-            <!-- Gradient header -->
-            <div class="mb-5">
-                <div class="rounded-xl bg-gradient-to-r from-slate-900 to-blue-900 text-white p-5 shadow">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <div>
-                            <h1 class="text-2xl font-semibold">Create New Note</h1>
-                            <p class="text-white/70 text-sm">Start a new idea and collaborate later</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button @click="saveNote"
-                                class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow disabled:opacity-60"
-                                :disabled="!title.trim() || loading">
-                                <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" /> {{ loading ? 'Saving…' : 'Save' }}
-                            </button>
-                            <button @click="goBack"
-                                class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow">
-                                <FontAwesomeIcon class="me-3" :icon="faArrowLeft" /> Back to Notes
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <NotesHero title="Create New Note" subtitle="Start a new idea and collaborate later">
+                <template #actions>
+                    <button @click="saveNote"
+                        class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow disabled:opacity-60"
+                        :disabled="!title.trim() || loading">
+                        <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" /> {{ loading ? 'Saving…' : 'Save' }}
+                    </button>
+                    <button @click="goBack"
+                        class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow">
+                        <FontAwesomeIcon class="me-3" :icon="faArrowLeft" /> Back to Notes
+                    </button>
+                </template>
+            </NotesHero>
 
             <!-- Card container -->
             <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
@@ -51,6 +42,7 @@
 
 <script setup>
 import NotesLayout from '@/layouts/NotesLayout.vue';
+import NotesHero from '@/components/NotesHero.vue';
 import { ref, computed } from "vue";
 import TextEditor from "../../components/TextEditor.vue";
 import api from "../../services/api";

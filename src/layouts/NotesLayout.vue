@@ -22,6 +22,9 @@
                                 <router-link to="/notes" @click="toggleNav">Notes</router-link>
                             </li>
                             <li>
+                                <router-link to="/about" @click="toggleNav">About</router-link>
+                            </li>
+                            <li>
                                 <router-link to="/profile" @click="toggleNav">Profile</router-link>
                             </li>
                         </ul>

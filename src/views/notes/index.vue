@@ -1,20 +1,14 @@
 <template>
     <NotesLayout>
         <section>
-            <div class="mb-5">
-                <div class="rounded-xl bg-gradient-to-r from-slate-900 to-blue-900 text-white p-5 shadow">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <div>
-                            <h1 class="text-2xl font-semibold">Your Notes</h1>
-                            <p class="text-white/70 text-sm">Create, edit and collaborate</p>
-                        </div>
-                        <button @click="goToCreate"
-                            class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow">
-                            <FontAwesomeIcon class="me-3" :icon="faPlus" />Create New Note
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <NotesHero title="Your Notes" subtitle="Create, edit and collaborate">
+                <template #actions>
+                    <button @click="goToCreate"
+                        class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow">
+                        <FontAwesomeIcon class="me-3" :icon="faPlus" />Create New Note
+                    </button>
+                </template>
+            </NotesHero>
 
             <div class="flex items-center gap-3 mb-4 mt-12">
                 <FontAwesomeIcon class="dark:text-white" :icon="faMagnifyingGlass" />
@@ -40,7 +34,7 @@
                             </router-link>
                             <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
                                 <FontAwesomeIcon class="me-3" :icon="faUser" /> {{ note.owner?.name || note.owner?.email
-                                    ||
+                                ||
                                 'Unknown' }}
                             </div>
                             <div class="text-xs my-2 text-slate-500 dark:text-slate-400">
@@ -64,6 +58,7 @@
 
 <script setup>
 import NotesLayout from '@/layouts/NotesLayout.vue';
+import NotesHero from '@/components/NotesHero.vue';
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "../../services/api";

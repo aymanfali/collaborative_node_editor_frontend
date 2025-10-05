@@ -9,6 +9,7 @@ import Dashboard from "@/views/dashboard/index.vue";
 import DashboardUsers from "@/views/dashboard/users/index.vue";
 import DashboardNotes from "@/views/dashboard/notes/index.vue";
 import Home from "@/views/home/index.vue";
+import About from "@/views/about/index.vue";
 import api from "@/services/api.js";
 
 const router = createRouter({
@@ -18,6 +19,11 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: Home,
+    },
+    {
+      path: "/about",
+      name: "about",
+      component: About,
     },
     {
       path: "/notes",
