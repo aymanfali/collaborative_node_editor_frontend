@@ -23,6 +23,10 @@
           :class="isActive('/notes') ? 'bg-white/10 text-white ring-1 ring-white/20' : 'text-white/80 hover:bg-white/5'">
           Notes
         </router-link>
+        <router-link to="/about" class="relative px-3 py-1 rounded-full text-sm transition-colors"
+          :class="isActive('/about') ? 'bg-white/10 text-white ring-1 ring-white/20' : 'text-white/80 hover:bg-white/5'">
+          About
+        </router-link>
       </nav>
     </div>
 
@@ -97,6 +101,9 @@
             <router-link to="/notes" class="px-3 py-2 rounded hover:bg-white/10" @click="navOpen = false">
               <FontAwesomeIcon class="mr-3" :icon="faNoteSticky" />Notes
             </router-link>
+            <router-link to="/about" class="px-3 py-2 rounded hover:bg-white/10" @click="navOpen = false">
+              <FontAwesomeIcon class="mr-3" :icon="faCircleInfo" />About
+            </router-link>
             <div v-if="isLoggedIn" class="flex flex-col gap-y-3">
               <router-link v-if="isAdmin" to="/dashboard" class="px-3 py-2 rounded hover:bg-white/10"
                 @click="navOpen = false">
@@ -133,7 +140,7 @@ import api from '@/services/api.js';
 import { logout as logoutApi } from '@/services/auth.js';
 import { useToast } from 'vue-toastification';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faArrowRightFromBracket, faArrowRightToBracket, faCopyright, faGaugeHigh, faHome, faNoteSticky, faUser, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket, faArrowRightToBracket, faCopyright, faGaugeHigh, faHome, faNoteSticky, faUser, faUserPlus, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import ThemeToggle from '@/components/ThemeToggle.vue';
 
 const router = useRouter();

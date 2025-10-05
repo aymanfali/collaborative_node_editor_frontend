@@ -1,46 +1,36 @@
 <template>
   <NotesLayout>
     <section>
-      <!-- Gradient page header -->
-      <div class="mb-5">
-        <div class="rounded-xl bg-gradient-to-r from-slate-900 to-blue-900 text-white p-5 shadow">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <h1 class="text-2xl font-semibold">Edit Note</h1>
-              <p class="text-white/70 text-sm">Manage content and collaborators</p>
-            </div>
-            <div class="flex gap-2 flex-wrap justify-end">
-              <span v-if="!canEdit" class="px-3 py-2 rounded bg-white/10 text-white text-sm">View only</span>
-              <button @click="saveNote" :disabled="!canEdit || !isChanged || !note.title.trim() || saving"
-                class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow disabled:opacity-60">
-                <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" /> {{ saving ? 'Saving...' : 'Save' }}
-              </button>
-              <!-- Export buttons -->
-              <div class="flex items-center gap-2 bg-white/10 rounded-md p-1">
-                <button @click="downloadExport('md')" :disabled="loading"
-                  class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow disabled:opacity-60"
-                  title="Export Markdown">
-                  <FontAwesomeIcon class="me-3" :icon="faMarkdown" />MD
-                </button>
-                <button @click="downloadExport('html')" :disabled="loading"
-                  class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow disabled:opacity-60"
-                  title="Export HTML">
-                  <FontAwesomeIcon class="me-3" :icon="faHtml5" />HTML
-                </button>
-                <button @click="downloadExport('pdf')" :disabled="loading"
-                  class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow disabled:opacity-60"
-                  title="Export PDF">
-                  <FontAwesomeIcon class="me-3" :icon="faFilePdf" />PDF
-                </button>
-              </div>
-              <button @click="goBack"
-                class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm shadow">
-                <FontAwesomeIcon class="me-3" :icon="faArrowLeft" /> Back to Notes
-              </button>
-            </div>
+      <NotesHero title="Edit Note" subtitle="Manage content and collaborators">
+        <template #actions>
+          <span v-if="!canEdit" class="px-3 py-2 rounded bg-white/10 text-white text-sm">View only</span>
+          <button @click="saveNote" :disabled="!canEdit || !isChanged || !note.title.trim() || saving"
+            class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow disabled:opacity-60">
+            <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" /> {{ saving ? 'Saving...' : 'Save' }}
+          </button>
+          <div class="flex items-center gap-2 bg-white/10 rounded-md p-1">
+            <button @click="downloadExport('md')" :disabled="loading"
+              class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow disabled:opacity-60"
+              title="Export Markdown">
+              <FontAwesomeIcon class="me-3" :icon="faMarkdown" />MD
+            </button>
+            <button @click="downloadExport('html')" :disabled="loading"
+              class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow disabled:opacity-60"
+              title="Export HTML">
+              <FontAwesomeIcon class="me-3" :icon="faHtml5" />HTML
+            </button>
+            <button @click="downloadExport('pdf')" :disabled="loading"
+              class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow disabled:opacity-60"
+              title="Export PDF">
+              <FontAwesomeIcon class="me-3" :icon="faFilePdf" />PDF
+            </button>
           </div>
-        </div>
-      </div>
+          <button @click="goBack"
+            class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow">
+            <FontAwesomeIcon class="me-3" :icon="faArrowLeft" /> Back to Notes
+          </button>
+        </template>
+      </NotesHero>
 
       <!-- Card container for editor and collaborators -->
       <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
@@ -124,6 +114,7 @@
 
 <script setup>
 import NotesLayout from '@/layouts/NotesLayout.vue';
+import NotesHero from '@/components/NotesHero.vue';
 import { ref, reactive, watch, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "../../services/api";
