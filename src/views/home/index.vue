@@ -20,7 +20,7 @@
                     </div>
 
                     <div class="mt-8 grid grid-cols-2 gap-3 text-sm text-slate-600 dark:text-slate-300">
-                        <div class="bsm:flex items-start gap-3">
+                        <div class="sm:flex items-start gap-3">
                             <div
                                 class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
                                 <FontAwesomeIcon :icon="faArrowsRotate" />
