@@ -1,4 +1,4 @@
-#CONOTE
+# CONOTE
 # Collaborative Note Editor — Frontend
 
 Single-page application for a real-time collaborative notes/editor app.
