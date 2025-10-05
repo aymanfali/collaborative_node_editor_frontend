@@ -1,4 +1,5 @@
-# Collaborative Node Editor — Frontend
+#CONOTE
+# Collaborative Note Editor — Frontend
 
 Single-page application for a real-time collaborative notes/editor app.
 
@@ -64,6 +65,15 @@ You can reference these in code via `import.meta.env.VITE_*`.
 
 - Run `npm run build` to generate static assets in `dist/`.
 - Serve `dist/` behind any static file server (e.g., Nginx, Vercel, Netlify). If the app relies on a separate API, configure the correct API/CORS in production.
+
+## Demo Examples
+
+Home Page
+<img width="1896" height="872" alt="image" src="https://github.com/user-attachments/assets/5159b765-9dbe-4ac7-afa5-934282fa7b08" />
+
+Dashboard
+<img width="1892" height="596" alt="image" src="https://github.com/user-attachments/assets/61358205-2962-45e4-b9bd-79e533a38855" />
+
 
 ## License
 
