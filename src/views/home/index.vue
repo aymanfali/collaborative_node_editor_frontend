@@ -65,14 +65,10 @@
 
                 <div class="hidden lg:block">
                     <div
-                        class="rounded-xl border border-gray-200 dark:border-gray-700 p-6 bg-white dark:bg-gray-900 shadow">
-                        <h3 class="text-lg font-semibold mb-3 dark:text-slate-300">Live preview</h3>
+                        class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow">
                         <div
-                            class="h-64 bg-gradient-to-b from-slate-50 to-white dark:from-gray-800 dark:to-gray-900 rounded p-4 overflow-auto text-sm text-slate-600 dark:text-slate-300">
-                            <p class="font-semibold">Meeting notes</p>
-                            <p class="mt-2">- Welcome everyone</p>
-                            <p>- Discuss roadmap</p>
-                            <p>- Assign action items</p>
+                            class="h-80 p-4 rounded-xl bg-gradient-to-b from-slate-50 to-white dark:from-gray-800 dark:to-gray-900 overflow-auto text-sm text-slate-600 dark:text-slate-300">
+                            <img src="/public/conote.png" alt="connote" class="object-fill rounded-md h-full">
                         </div>
                     </div>
                 </div>
