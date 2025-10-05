@@ -40,13 +40,13 @@
         </button>
 
         <div class="flex items-center gap-2 relative">
-          <div class="font-medium cursor-pointer hidden sm:block" @click="toggleAccountList">{{ userName }}</div>
+          <div class="font-medium cursor-pointer hidden sm:block" @click="toggleAccountList" @contextmenu.prevent="toggleAccountList">{{ userName }}</div>
 
           <img v-if="userAvatar" :src="userAvatar" alt="avatar"
-            class="w-8 h-8 rounded-full object-cover ring-2 ring-white/10 cursor-pointer" @click="toggleAccountList" />
+            class="w-8 h-8 rounded-full object-cover ring-2 ring-white/10 cursor-pointer" @click="toggleAccountList" @contextmenu.prevent="toggleAccountList" />
           <div v-else
             class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white select-none cursor-pointer"
-            @click="toggleAccountList">
+            @click="toggleAccountList" @contextmenu.prevent="toggleAccountList">
             {{ userInitial }}
           </div>
 
