@@ -19,7 +19,7 @@
                         </router-link>
                     </div>
 
-                    <div class="mt-8 grid grid-cols-2 gap-3 text-sm text-slate-600 dark:text-slate-300">
+                    <div class="mt-8 grid grid-cols-2 gap-3 text-md text-slate-600 dark:text-slate-300">
                         <div class="sm:flex items-start gap-3">
                             <div
                                 class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
@@ -67,7 +67,7 @@
                     <div
                         class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow">
                         <div
-                            class="h-80 p-4 rounded-xl bg-gradient-to-b from-slate-50 to-white dark:from-gray-800 dark:to-gray-900 overflow-auto text-sm text-slate-600 dark:text-slate-300">
+                            class="h-80 p-4 rounded-xl bg-gradient-to-b from-slate-50 to-white dark:from-gray-800 dark:to-gray-900 overflow-auto text-md text-slate-600 dark:text-slate-300">
                             <img src="/public/conote.png" alt="connote" class="object-fill rounded-md h-full">
                         </div>
                     </div>
@@ -79,7 +79,7 @@
             <!-- How it works (modern cards) -->
             <section>
                 <h2 class="text-2xl font-semibold text-slate-800 dark:text-white text-center mb-2">How it works</h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400 text-center mb-6">Three simple steps to get your
+                <p class="text-md text-slate-500 dark:text-slate-400 text-center mb-6">Three simple steps to get your
                     team collaborating quickly. Each step includes an interactive preview so you know what to expect.
                 </p>
 
@@ -97,7 +97,7 @@
                             <div>
                                 <div class="text-xs text-indigo-600 font-semibold">Step 1</div>
                                 <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">Create a note</h3>
-                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Open the editor and start
+                                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">Open the editor and start
                                     writing — markdown support, attachments, and rich formatting included.</p>
                             </div>
                         </div>
@@ -116,7 +116,7 @@
                             <div>
                                 <div class="text-xs text-emerald-600 font-semibold">Step 2</div>
                                 <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">Invite collaborators</h3>
-                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Share a link or invite
+                                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">Share a link or invite
                                     teammates by email. Manage permissions per-note so everyone has the right access.
                                 </p>
                             </div>
@@ -136,7 +136,7 @@
                             <div>
                                 <div class="text-xs text-amber-600 font-semibold">Step 3</div>
                                 <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">Stay in sync</h3>
-                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Edits are propagated in
+                                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">Edits are propagated in
                                     real-time so collaborators always see the latest version without conflicts.</p>
                             </div>
                         </div>
@@ -195,7 +195,7 @@
                         <FontAwesomeIcon class="me-3" :icon="faBolt" size="2x" />
                         <div>
                             <h3 class="text-xl font-semibold">Ready to collaborate?</h3>
-                            <p class="text-sm opacity-90">Get started for free — no credit card required.</p>
+                            <p class="text-md opacity-90">Get started for free — no credit card required.</p>
                         </div>
                     </div>
                     <div class="flex gap-3">

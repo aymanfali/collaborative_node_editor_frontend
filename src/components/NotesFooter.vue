@@ -1,6 +1,6 @@
 <template>
   <footer class="mt-8 py-6 sm:py-8 bg-gradient-to-r from-slate-900 to-blue-900 text-white border-t border-white/5">
-    <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-start">
         <!-- Brand / Logo -->
         <div class="flex flex-col items-start gap-2">
@@ -10,7 +10,7 @@
             </div>
             <div class="text-center sm:text-left mx-3">
               <div class="font-semibold">{{ appName }}</div>
-              <div class="text-xs text-white/80">Collaborative notes, made simple</div>
+              <div class="text-sm text-white/80">Collaborative notes, made simple</div>
             </div>
           </div>
 
@@ -21,12 +21,21 @@
           <div class="font-medium mb-2">Pages</div>
           <ul class="space-y-2">
             <li>
-              <router-link to="/" class="text-sm hover:underline"
-                :class="$route.path === '/' ? 'underline' : ''">Home</router-link>
+              <router-link to="/" class="text-md hover:underline" :class="$route.path === '/' ? 'underline' : ''">
+                <FontAwesomeIcon class="me-3" :icon="faHome" />Home
+              </router-link>
             </li>
             <li>
-              <router-link to="/notes" class="text-sm hover:underline"
-                :class="$route.path.startsWith('/notes') ? 'underline' : ''">Notes</router-link>
+              <router-link to="/notes" class="text-md hover:underline"
+                :class="$route.path.startsWith('/notes') ? 'underline' : ''">
+                <FontAwesomeIcon class="me-3" :icon="faNoteSticky" />Notes
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/about" class="text-md hover:underline"
+                :class="$route.path.startsWith('/about') ? 'underline' : ''">
+                <FontAwesomeIcon class="me-3" :icon="faCircleInfo" />About
+              </router-link>
             </li>
           </ul>
         </div>
@@ -53,9 +62,10 @@
             </div>
           </div>
         </div>
-        <hr class="border border-slate-200/20">
-        <div class="text-xs text-white/60 mt-3">© {{ new Date().getFullYear() }} {{ appName }}. All rights reserved.
-        </div>
+      </div>
+      <hr class="border my-4 border-slate-200/20">
+      <div class="text-md text-center text-white/60 mt-3">© {{ new Date().getFullYear() }} {{ appName }}. All rights
+        reserved.
       </div>
     </div>
   </footer>
@@ -63,7 +73,7 @@
 
 <script setup>
 import { faGithub, faSquareLinkedin, faXTwitter } from '@fortawesome/free-brands-svg-icons';
-import { faCopyright, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faCopyright, faEnvelope, faHome, faNoteSticky, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const appName = import.meta.env.VITE_APP_NAME ?? 'CoNotes';
