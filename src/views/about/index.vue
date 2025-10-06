@@ -7,14 +7,14 @@
       <section class="flex justify-center gap-8 items-center">
         <div class="my-2 max-w-4xl">
           <h1 class="text-4xl text-center md:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight">
-            About CoNotes
+            About CoNote
           </h1>
           <p class="my-10 text-lg text-center text-slate-600 dark:text-slate-300">
-            CoNotes is a collaborative notes app for teams and individuals. Create, edit, and
+            CoNote is a collaborative notes app for teams and individuals. Create, edit, and
             collaborate in real-time with secure access controls and a modern, fast UI.
           </p>
 
-          <div class="mt-8 max-w-fit mx-auto grid grid-cols-2 gap-3 text-sm text-slate-600 dark:text-slate-300">
+          <div class="mt-8 max-w-fit mx-auto grid grid-cols-2 gap-10 text-md text-slate-600 dark:text-slate-300">
             <div class="sm:flex items-start gap-3">
               <div
                 class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
@@ -22,7 +22,7 @@
               </div>
               <div>
                 <div class="font-medium">Real-time sync</div>
-                <div class="text-xs">Everyone sees edits instantly.</div>
+                <div class="text-sm">Everyone sees edits instantly.</div>
               </div>
             </div>
             <div class="sm:flex items-start gap-3">
@@ -32,7 +32,7 @@
               </div>
               <div>
                 <div class="font-medium">Easy sharing</div>
-                <div class="text-xs">Invite teammates in seconds.</div>
+                <div class="text-sm">Invite teammates in seconds.</div>
               </div>
             </div>
             <div class="sm:flex items-start gap-3">
@@ -42,7 +42,7 @@
               </div>
               <div>
                 <div class="font-medium">Secure by default</div>
-                <div class="text-xs">Auth, roles, and privacy.</div>
+                <div class="text-sm">Auth, roles, and privacy.</div>
               </div>
             </div>
             <div class="sm:flex items-start gap-3">
@@ -52,7 +52,7 @@
               </div>
               <div>
                 <div class="font-medium">Access controls</div>
-                <div class="text-xs">Manage permissions easily.</div>
+                <div class="text-sm">Manage permissions easily.</div>
               </div>
             </div>
           </div>
@@ -64,7 +64,7 @@
       <!-- Key features (cards) -->
       <section>
         <h2 class="text-2xl font-semibold text-slate-800 dark:text-white text-center mb-2">Key features</h2>
-        <p class="text-sm text-slate-500 dark:text-slate-400 text-center mb-6">A modern toolkit for collaborative
+        <p class="text-md text-slate-500 dark:text-slate-400 text-center mb-6">A modern toolkit for collaborative
           note-taking.</p>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Feature 1 -->
@@ -79,7 +79,7 @@
               </div>
               <div>
                 <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">Fast editor</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Rich text and markdown-friendly note
+                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">Rich text and markdown-friendly note
                   editing with instant feedback.</p>
               </div>
             </div>
@@ -97,7 +97,7 @@
               </div>
               <div>
                 <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">Collaboration</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Share notes, co-edit seamlessly, and keep
+                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">Share notes, co-edit seamlessly, and keep
                   everyone in sync.</p>
               </div>
             </div>
@@ -115,7 +115,7 @@
               </div>
               <div>
                 <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">Privacy & roles</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Authentication, role-based access, and
+                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">Authentication, role-based access, and
                   secure storage.</p>
               </div>
             </div>
@@ -130,7 +130,7 @@
         <h2 class="text-2xl font-semibold text-slate-800 dark:text-white text-center mb-5">Why CoNotes?</h2>
         <!-- Visual card -->
         <div class="hidden lg:block">
-          <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+          <ul class="space-y-2 text-md text-slate-600 dark:text-slate-300">
             <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-6 bg-white dark:bg-gray-900 shadow">
               <li class="flex items-center gap-3">
                 <FontAwesomeIcon :icon="faCircleCheck" size="2x" />
@@ -162,7 +162,7 @@
             <FontAwesomeIcon class="me-3" :icon="faBolt" size="2x" />
             <div>
               <h3 class="text-xl font-semibold">Ready to try CoNotes?</h3>
-              <p class="text-sm opacity-90">Get started for free — no credit card required.</p>
+              <p class="text-md opacity-90">Get started for free — no credit card required.</p>
             </div>
           </div>
           <div class="flex gap-3">

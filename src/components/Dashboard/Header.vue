@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import ThemeToggle from '../ThemeToggle.vue';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, onBeforeUnmount } from 'vue';
 import api from '@/services/api.js';
 import { useToast } from 'vue-toastification';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -10,6 +10,7 @@ import { faArrowRightFromBracket, faCopyright, faGlobe, faUser } from '@fortawes
 const router = useRouter()
 const user = ref({})
 const isAccountListOpen = ref(false)
+const avatarContainer = ref(null)
 const isProfileModalOpen = ref(false)
 const toast = useToast()
 
@@ -31,6 +32,14 @@ function goProfile() {
 }
 
 onMounted(async () => {
+    // Click-away to close account list
+    const handleClickAway = (e) => {
+        if (isAccountListOpen.value && avatarContainer.value && !avatarContainer.value.contains(e.target)) {
+            isAccountListOpen.value = false
+        }
+    }
+    document.addEventListener('click', handleClickAway)
+
     let storedUser = JSON.parse(localStorage.getItem('activeUser'))
 
     // If there's no activeUser but we have an access token, try to recover the user from the backend
@@ -64,6 +73,10 @@ onMounted(async () => {
     }
 
     user.value = storedUser
+    // Cleanup listener when component unmounts
+    onBeforeUnmount(() => {
+        document.removeEventListener('click', handleClickAway)
+    })
 })
 
 const userInitial = computed(() => (user.value?.name?.trim()?.charAt(0)?.toUpperCase() || '?'))
@@ -110,17 +123,17 @@ const handleLogout = async () => {
                 <FontAwesomeIcon class="md:me-3" :icon="faGlobe" />
                 <span class="hidden md:block">Visit Website</span>
             </router-link>
-            <div class="avatar flex items-center gap-2 relative">
+            <div class="avatar flex items-center gap-2 relative" ref="avatarContainer">
                 <div v-if="user.avatar" class="w-8 h-8 rounded-full overflow-hidden cursor-pointer"
-                    @click="toggleAccountList">
+                    @click.stop="toggleAccountList">
                     <img :src="user.avatar" alt="avatar" class="w-full h-full object-cover" />
                 </div>
                 <div v-else
                     class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white cursor-pointer"
-                    @click="toggleAccountList">
+                    @click.stop="toggleAccountList">
                     {{ userInitial }}
                 </div>
-                <span class="cursor-pointer hidden sm:inline-block" @click="toggleAccountList">{{ user.name }}</span>
+                <span class="cursor-pointer hidden sm:inline-block" @click.stop="toggleAccountList">{{ user.name }}</span>
                 <div class="backdrop-blur bg-white/10 dark:text-white text-slate-800 p-1 rounded-md absolute top-full right-0 mt-2 shadow-lg w-44 border border-white/10"
                     v-if="isAccountListOpen">
                     <button @click="goProfile"

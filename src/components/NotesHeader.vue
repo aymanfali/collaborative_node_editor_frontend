@@ -10,20 +10,20 @@
       <FontAwesomeIcon class="w-8 h-8 sm:w-10 sm:h-10 text-white/90" :icon="faCopyright" size="2x" />
       <router-link to="/" class="flex flex-col gap-1">
         <h2 class="text-base sm:text-lg font-semibold hidden sm:block">{{ appName }}</h2>
-        <p class="text-xs text-white/70 hidden sm:block">Your personal Real-time Note</p>
+        <p class="text-sm text-white/70 hidden sm:block">Your personal Real-time Note</p>
       </router-link>
 
       <!-- Desktop nav -->
       <nav class="hidden md:flex items-center gap-3 md:ml-6">
-        <router-link to="/" class="relative px-3 py-1 rounded-full text-sm transition-colors"
+        <router-link to="/" class="relative px-3 py-1 rounded-full text-md transition-colors"
           :class="isActive('/') ? 'bg-white/10 text-white ring-1 ring-white/20' : 'text-white/80 hover:bg-white/5'">
           Home
         </router-link>
-        <router-link to="/notes" class="relative px-3 py-1 rounded-full text-sm transition-colors"
+        <router-link to="/notes" class="relative px-3 py-1 rounded-full text-md transition-colors"
           :class="isActive('/notes') ? 'bg-white/10 text-white ring-1 ring-white/20' : 'text-white/80 hover:bg-white/5'">
           Notes
         </router-link>
-        <router-link to="/about" class="relative px-3 py-1 rounded-full text-sm transition-colors"
+        <router-link to="/about" class="relative px-3 py-1 rounded-full text-md transition-colors"
           :class="isActive('/about') ? 'bg-white/10 text-white ring-1 ring-white/20' : 'text-white/80 hover:bg-white/5'">
           About
         </router-link>
@@ -40,13 +40,13 @@
         </button>
 
         <div class="flex items-center gap-2 relative">
-          <div class="font-medium cursor-pointer hidden sm:block" @click="toggleAccountList" @contextmenu.prevent="toggleAccountList">{{ userName }}</div>
+          <div class="font-medium cursor-pointer hidden sm:block" @click.stop="toggleAccountList">{{ userName }}</div>
 
           <img v-if="userAvatar" :src="userAvatar" alt="avatar"
-            class="w-8 h-8 rounded-full object-cover ring-2 ring-white/10 cursor-pointer" @click="toggleAccountList" @contextmenu.prevent="toggleAccountList" />
+            class="w-8 h-8 rounded-full object-cover ring-2 ring-white/10 cursor-pointer" @click.stop="toggleAccountList" />
           <div v-else
             class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white select-none cursor-pointer"
-            @click="toggleAccountList" @contextmenu.prevent="toggleAccountList">
+            @click.stop="toggleAccountList">
             {{ userInitial }}
           </div>
 
@@ -91,18 +91,18 @@
           <button class="absolute top-4 right-4 text-white text-2xl" @click="navOpen = false">&times;</button>
           <div class="flex m-3">
             <img v-if="userAvatar" :src="userAvatar" alt="avatar"
-              class="me-4 w-8 h-8 rounded-full object-cover ring-2 ring-white/10 cursor-pointer" />
-            <div class="font-medium cursor-pointer" @click="toggleAccountList">{{ userName }}</div>
+              class="me-4 w-8 h-8 rounded-full object-cover ring-2 ring-white/10 cursor-pointer" @click.stop="toggleAccountList" />
+            <div class="font-medium cursor-pointer" @click.stop="toggleAccountList">{{ userName }}</div>
           </div>
           <nav class="flex flex-col gap-3 mt-10">
             <router-link to="/" class="px-3 py-2 rounded hover:bg-white/10" @click="navOpen = false">
-              <FontAwesomeIcon class="mr-3" :icon="faHome" />Home
+              <FontAwesomeIcon class="me-3" :icon="faHome" />Home
             </router-link>
             <router-link to="/notes" class="px-3 py-2 rounded hover:bg-white/10" @click="navOpen = false">
-              <FontAwesomeIcon class="mr-3" :icon="faNoteSticky" />Notes
+              <FontAwesomeIcon class="me-3" :icon="faNoteSticky" />Notes
             </router-link>
             <router-link to="/about" class="px-3 py-2 rounded hover:bg-white/10" @click="navOpen = false">
-              <FontAwesomeIcon class="mr-3" :icon="faCircleInfo" />About
+              <FontAwesomeIcon class="me-3" :icon="faCircleInfo" />About
             </router-link>
             <div v-if="isLoggedIn" class="flex flex-col gap-y-3">
               <router-link v-if="isAdmin" to="/dashboard" class="px-3 py-2 rounded hover:bg-white/10"
