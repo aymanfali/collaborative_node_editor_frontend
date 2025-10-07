@@ -8,7 +8,7 @@ Single-page application for a real-time collaborative notes/editor app.
 - **Framework**: Vue 3 + Vue Router
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS
-- **Rich Text**: Quill
+- **Rich Text**: Quill.js
 - **Realtime**: socket.io-client
 - **UI/UX**: Swiper, Vue Toastification, Font Awesome
 
