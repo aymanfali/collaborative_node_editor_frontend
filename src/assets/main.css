@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-#app {
+html, body, #app {
+  font-family: 'Cairo', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, 'Noto Sans Arabic', 'Geeza Pro', 'Tahoma', sans-serif;
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -81,6 +82,18 @@ form .icon {
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
 }
 
+/* RTL support */
+html[dir='rtl'] body {
+  direction: rtl;
+}
+html[dir='rtl'] .ql-editor {
+  direction: rtl;
+  text-align: right;
+}
+html[dir='rtl'] .ql-toolbar.ql-snow {
+  direction: rtl;
+}
+
 @page {
   margin: 1in;
 }
@@ -102,4 +115,21 @@ form .icon {
   .ql-toolbar.ql-snow {
     display: none;
   }
+}
+
+/* Logical-direction utilities for RTL/LTR */
+.dir-abs-end {
+  right: 0.5rem; /* 2 */
+}
+html[dir='rtl'] .dir-abs-end {
+  right: auto;
+  left: 0.5rem; /* 2 */
+}
+
+.dir-pad-end-10 {
+  padding-right: 2.5rem; /* pr-10 */
+}
+html[dir='rtl'] .dir-pad-end-10 {
+  padding-right: 0;
+  padding-left: 2.5rem; /* pl-10 */
 }

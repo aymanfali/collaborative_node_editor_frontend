@@ -55,7 +55,7 @@ watch(isDark, (val) => {
 </script>
 
 <template>
-    <label class="theme-switch relative inline-flex items-center cursor-pointer" aria-label="Toggle theme">
+    <label dir="ltr" class="theme-switch relative inline-flex items-center cursor-pointer" aria-label="Toggle theme">
         <input
             type="checkbox"
             class="sr-only"

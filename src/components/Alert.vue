@@ -1,7 +1,7 @@
 <template>
     <div v-if="visible" :class="['p-4 rounded mb-4', typeClass]" class="transition-all duration-300">
         {{ message }}
-        <button @click="close" class="ml-4 font-bold">✕</button>
+        <button @click="close" class="me-4 font-bold">✕</button>
     </div>
 </template>
 

@@ -7,11 +7,10 @@
       <section class="flex justify-center gap-8 items-center">
         <div class="my-2 max-w-4xl">
           <h1 class="text-4xl text-center md:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight">
-            About CoNote
+            {{ $t('about.title') }}
           </h1>
           <p class="my-10 text-lg text-center text-slate-600 dark:text-slate-300">
-            CoNote is a collaborative notes app for teams and individuals. Create, edit, and
-            collaborate in real-time with secure access controls and a modern, fast UI.
+            {{ $t('about.intro') }}
           </p>
 
           <div class="mt-8 max-w-fit mx-auto grid grid-cols-2 gap-10 text-md text-slate-600 dark:text-slate-300">
@@ -21,8 +20,8 @@
                 <FontAwesomeIcon :icon="faArrowsRotate" />
               </div>
               <div>
-                <div class="font-medium">Real-time sync</div>
-                <div class="text-sm">Everyone sees edits instantly.</div>
+                <div class="font-medium">{{ $t('home.features.syncTitle') }}</div>
+                <div class="text-sm">{{ $t('home.features.syncDesc') }}</div>
               </div>
             </div>
             <div class="sm:flex items-start gap-3">
@@ -31,8 +30,8 @@
                 <FontAwesomeIcon :icon="faShare" />
               </div>
               <div>
-                <div class="font-medium">Easy sharing</div>
-                <div class="text-sm">Invite teammates in seconds.</div>
+                <div class="font-medium">{{ $t('home.features.shareTitle') }}</div>
+                <div class="text-xs">{{ $t('home.features.shareDesc') }}</div>
               </div>
             </div>
             <div class="sm:flex items-start gap-3">
@@ -41,8 +40,8 @@
                 <FontAwesomeIcon :icon="faLock" />
               </div>
               <div>
-                <div class="font-medium">Secure by default</div>
-                <div class="text-sm">Auth, roles, and privacy.</div>
+                <div class="font-medium">{{ $t('home.features.privateTitle') }}</div>
+                <div class="text-xs">{{ $t('home.features.privateDesc') }}</div>
               </div>
             </div>
             <div class="sm:flex items-start gap-3">
@@ -51,8 +50,8 @@
                 <FontAwesomeIcon :icon="faHand" />
               </div>
               <div>
-                <div class="font-medium">Access controls</div>
-                <div class="text-sm">Manage permissions easily.</div>
+                <div class="font-medium">{{ $t('home.features.accessTitle') }}</div>
+                <div class="text-xs">{{ $t('home.features.accessDesc') }}</div>
               </div>
             </div>
           </div>
@@ -63,9 +62,9 @@
 
       <!-- Key features (cards) -->
       <section>
-        <h2 class="text-2xl font-semibold text-slate-800 dark:text-white text-center mb-2">Key features</h2>
-        <p class="text-md text-slate-500 dark:text-slate-400 text-center mb-6">A modern toolkit for collaborative
-          note-taking.</p>
+        <h2 class="text-2xl font-semibold text-slate-800 dark:text-white text-center mb-2">{{ $t('about.keyFeatures') }}
+        </h2>
+        <p class="text-md text-slate-500 dark:text-slate-400 text-center mb-6">{{ $t('about.keyFeaturesSubtitle') }}</p>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Feature 1 -->
           <article
@@ -78,9 +77,9 @@
                 </div>
               </div>
               <div>
-                <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">Fast editor</h3>
-                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">Rich text and markdown-friendly note
-                  editing with instant feedback.</p>
+                <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">{{ $t('about.features.fastEditorTitle') }}
+                </h3>
+                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">{{ $t('about.features.fastEditorDesc') }}</p>
               </div>
             </div>
           </article>
@@ -96,9 +95,10 @@
                 </div>
               </div>
               <div>
-                <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">Collaboration</h3>
-                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">Share notes, co-edit seamlessly, and keep
-                  everyone in sync.</p>
+                <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">{{ $t('about.features.collaborationTitle') }}
+                </h3>
+                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">{{ $t('about.features.collaborationDesc') }}
+                </p>
               </div>
             </div>
           </article>
@@ -114,9 +114,8 @@
                 </div>
               </div>
               <div>
-                <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">Privacy & roles</h3>
-                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">Authentication, role-based access, and
-                  secure storage.</p>
+                <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">{{ $t('about.features.privacyTitle') }}</h3>
+                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">{{ $t('about.features.privacyDesc') }}</p>
               </div>
             </div>
           </article>
@@ -127,26 +126,27 @@
 
       <!-- Under the hood -->
       <section>
-        <h2 class="text-2xl font-semibold text-slate-800 dark:text-white text-center mb-5">Why CoNotes?</h2>
+        <h2 class="text-2xl font-semibold text-slate-800 dark:text-white text-center mb-5">{{ $t('about.whyTitle') }}
+        </h2>
         <!-- Visual card -->
         <div class="hidden lg:block">
           <ul class="space-y-2 text-md text-slate-600 dark:text-slate-300">
             <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-6 bg-white dark:bg-gray-900 shadow">
               <li class="flex items-center gap-3">
                 <FontAwesomeIcon :icon="faCircleCheck" size="2x" />
-                Reduce friction in capturing, organizing, and sharing knowledge.
+                {{ $t('about.why1') }}
               </li>
             </div>
             <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-6 bg-white dark:bg-gray-900 shadow">
               <li class="flex items-center gap-3">
                 <FontAwesomeIcon :icon="faCircleCheck" size="2x" />
-                Built with performance and simplicity in mind.
+                {{ $t('about.why2') }}
               </li>
             </div>
             <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-6 bg-white dark:bg-gray-900 shadow">
               <li class="flex items-center gap-3">
                 <FontAwesomeIcon :icon="faCircleCheck" size="2x" />
-                Designed for teams, friendly for individuals.
+                {{ $t('about.why3') }}
               </li>
             </div>
           </ul>
@@ -161,13 +161,13 @@
           <div class="flex gap-5 items-center">
             <FontAwesomeIcon class="me-3" :icon="faBolt" size="2x" />
             <div>
-              <h3 class="text-xl font-semibold">Ready to try CoNotes?</h3>
-              <p class="text-md opacity-90">Get started for free — no credit card required.</p>
+              <h3 class="text-xl font-semibold">{{ $t('about.ctaTryTitle') }}</h3>
+              <p class="text-md opacity-90">{{ $t('about.ctaSubtitle') }}</p>
             </div>
           </div>
           <div class="flex gap-3">
-            <router-link to="/register" class="px-4 py-2 bg-white text-indigo-600 rounded-md font-medium">Get
-              started</router-link>
+            <router-link to="/register" class="px-4 py-2 bg-white text-indigo-600 rounded-md font-medium">
+              {{ $t('home.getStarted') }}</router-link>
           </div>
         </div>
       </section>

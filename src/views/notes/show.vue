@@ -1,111 +1,116 @@
 <template>
   <NotesLayout>
     <section>
-      <NotesHero title="Edit Note" subtitle="Manage content and collaborators">
+      <NotesHero :title="$t('notes.showHeroTitle')" :subtitle="$t('notes.showHeroSubtitle')">
         <template #actions>
-          <span v-if="!canEdit" class="px-3 py-2 rounded bg-white/10 text-white text-sm">View only</span>
+          <span v-if="!canEdit" class="px-3 py-2 rounded bg-white/10 text-white text-sm">{{ $t('notes.viewOnly')
+          }}</span>
           <button @click="saveNote" :disabled="!canEdit || !isChanged || !note.title.trim() || saving"
             class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow disabled:opacity-60">
-            <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" /> {{ saving ? 'Saving...' : 'Save' }}
+            <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" /> {{ saving ? $t('common.saving') : $t('common.save') }}
           </button>
           <div class="flex items-center gap-2 bg-white/10 rounded-md p-1">
             <button @click="downloadExport('md')" :disabled="loading"
               class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow disabled:opacity-60"
-              title="Export Markdown">
+              :title="$t('notes.export.md')">
               <FontAwesomeIcon class="me-3" :icon="faMarkdown" />MD
             </button>
             <button @click="downloadExport('html')" :disabled="loading"
               class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow disabled:opacity-60"
-              title="Export HTML">
+              :title="$t('notes.export.html')">
               <FontAwesomeIcon class="me-3" :icon="faHtml5" />HTML
             </button>
             <button @click="downloadExport('pdf')" :disabled="loading"
               class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow disabled:opacity-60"
-              title="Export PDF">
+              :title="$t('notes.export.pdf')">
               <FontAwesomeIcon class="me-3" :icon="faFilePdf" />PDF
             </button>
           </div>
           <button @click="goBack"
             class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow">
-            <FontAwesomeIcon class="me-3" :icon="faArrowLeft" /> Back to Notes
+            <FontAwesomeIcon class="me-3" :icon="faArrowLeft" /> {{ $t('notes.backToNotes') }}
           </button>
         </template>
       </NotesHero>
 
       <!-- Card container for editor and collaborators -->
       <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
-        <div v-if="loading" class="text-slate-600 dark:text-slate-300">Loading note...</div>
+        <div v-if="loading" class="text-slate-600 dark:text-slate-300">{{ $t('notes.loadingNote') }}</div>
         <div v-else-if="error" class="text-rose-600">{{ error }}</div>
 
         <div v-else>
-          <input v-model="note.title" :disabled="!canEdit" type="text" placeholder="Note Title"
+          <input v-model="note.title" :disabled="!canEdit" type="text" :placeholder="$t('notes.inputTitlePlaceholder')"
             class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full mb-3 disabled:bg-gray-100 disabled:text-gray-500" />
 
           <!-- Presence bar -->
           <div class="flex items-center gap-2 mb-2" v-if="presence.length">
-            <div v-for="p in presence" :key="presenceKey(p)" class="flex items-center gap-1">
-              <span class="inline-flex items-center justify-center rounded-full text-white text-xs w-6 h-6"
-                :style="{ backgroundColor: presenceColor(p) || '#64748b' }" :title="presenceDisplayName(p)">
-                {{ presenceInitials(p) }}
-              </span>
-            </div>
-            <span class="text-xs text-slate-500 dark:text-slate-400">{{ presence.length }} online</span>
+            <span class="inline-flex items-center justify-center rounded-full text-white text-xs w-6 h-6"
+              :style="{ backgroundColor: presenceColor(p) || '#64748b' }" :title="presenceDisplayName(p)">
+              {{ presenceInitials(p) }}
+            </span>
+          </div>
+          <span class="text-xs text-slate-500 dark:text-slate-400">{{ $t('notes.presenceOnline', {
+            count:
+              presence.length
+          })
+          }}</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-2">
+          <!-- Editor column -->
+          <div class="lg:col-span-2">
+            <TextEditor v-model="note.content" :read-only="!canEdit" :note-id="route.params.id" :user="currentUser"
+              @presence="onPresence" />
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-2">
-            <!-- Editor column -->
-            <div class="lg:col-span-2">
-              <TextEditor v-model="note.content" :read-only="!canEdit" :note-id="route.params.id" :user="currentUser"
-                @presence="onPresence" />
+          <!-- Collaborators sidebar -->
+          <aside
+            class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm h-max">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-lg font-medium text-slate-800 dark:text-slate-100">{{ $t('notes.collaborators') }}</h2>
+              <span class="text-sm text-slate-500 dark:text-slate-400" v-if="loadingCollabs">{{ $t('notes.loading')
+              }}</span>
             </div>
 
-            <!-- Collaborators sidebar -->
-            <aside
-              class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm h-max">
-              <div class="flex items-center justify-between mb-3">
-                <h2 class="text-lg font-medium text-slate-800 dark:text-slate-100">Collaborators</h2>
-                <span class="text-sm text-slate-500 dark:text-slate-400" v-if="loadingCollabs">Loading...</span>
-              </div>
+            <div v-if="canManageCollabs" class="mb-4 flex flex-col gap-2">
+              <input v-model="inviteEmail" type="email" :placeholder="$t('notes.inviteByEmail')"
+                class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full" />
+              <select v-model="invitePermission"
+                class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full">
+                <option value="view">{{ $t('notes.permissionView') }}</option>
+                <option value="edit">{{ $t('notes.permissionEdit') }}</option>
+              </select>
+              <button @click="addOrUpdateCollaborator" :disabled="!inviteEmail"
+                class="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm shadow disabled:opacity-60">
+                {{ $t('notes.inviteUpdate') }}
+              </button>
+            </div>
 
-              <div v-if="canManageCollabs" class="mb-4 flex flex-col gap-2">
-                <input v-model="inviteEmail" type="email" placeholder="Invite by email"
-                  class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full" />
-                <select v-model="invitePermission"
-                  class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full">
-                  <option value="view">View</option>
-                  <option value="edit">Edit</option>
-                </select>
-                <button @click="addOrUpdateCollaborator" :disabled="!inviteEmail"
-                  class="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm shadow disabled:opacity-60">
-                  Invite / Update
-                </button>
-              </div>
-
-              <div v-if="collaborators.length === 0" class="text-sm text-slate-500 dark:text-slate-400">
-                No collaborators yet.
-              </div>
-              <ul class="divide-y divide-gray-200 dark:divide-gray-800">
-                <li v-for="c in collaborators" :key="normId(c.user)" class="p-3 my-3 flex flex-col gap-4 border border-slate-300/20">
-                  <div>
-                    <div class="font-medium text-slate-800 dark:text-slate-100">{{ c.user.name || c.user.email }}</div>
-                    <div class="text-sm text-slate-500 dark:text-slate-400">{{ c.user.email }}</div>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <select :disabled="!canManageCollabs"
-                      class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded"
-                      :value="c.permission" @change="onChangePermission(c, $event.target.value)">
-                      <option value="view">View</option>
-                      <option value="edit">Edit</option>
-                    </select>
-                    <button v-if="canManageCollabs" @click="removeCollaborator(normId(c.user))"
-                      class="px-3 py-2 rounded-md border border-rose-300 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">
-                      Remove
-                    </button>
-                  </div>
-                </li>
-              </ul>
-            </aside>
-          </div>
+            <div v-if="collaborators.length === 0" class="text-sm text-slate-500 dark:text-slate-400">
+              {{ $t('notes.noCollaborators') }}
+            </div>
+            <ul class="divide-y divide-gray-200 dark:divide-gray-800">
+              <li v-for="c in collaborators" :key="normId(c.user)"
+                class="p-3 my-3 flex flex-col gap-4 border border-slate-300/20">
+                <div>
+                  <div class="font-medium text-slate-800 dark:text-slate-100">{{ c.user.name || c.user.email }}</div>
+                  <div class="text-sm text-slate-500 dark:text-slate-400">{{ c.user.email }}</div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <select :disabled="!canManageCollabs"
+                    class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-700 dark:text-slate-200 py-2 px-3 rounded"
+                    :value="c.permission" @change="onChangePermission(c, $event.target.value)">
+                    <option value="view">{{ $t('notes.permissionView') }}</option>
+                    <option value="edit">{{ $t('notes.permissionEdit') }}</option>
+                  </select>
+                  <button v-if="canManageCollabs" @click="removeCollaborator(normId(c.user))"
+                    class="px-3 py-2 rounded-md border border-rose-300 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-sm">
+                    {{ $t('notes.remove') }}
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </aside>
         </div>
       </div>
     </section>
@@ -116,6 +121,7 @@
 import NotesLayout from '@/layouts/NotesLayout.vue';
 import NotesHero from '@/components/NotesHero.vue';
 import { ref, reactive, watch, onMounted, computed } from "vue";
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from "vue-router";
 import api from "../../services/api";
 import TextEditor from "../../components/TextEditor.vue";
@@ -127,6 +133,7 @@ import { faHtml5, faMarkdown } from '@fortawesome/free-brands-svg-icons';
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
+const { t } = useI18n()
 
 const note = reactive({ title: "", content: "", owner: null });
 const originalNote = reactive({ title: "", content: "" });
@@ -216,8 +223,8 @@ const fetchNote = async () => {
     }
   } catch (err) {
     console.error(err);
-    error.value = "Failed to fetch note.";
-    toast.error("Failed to fetch note.");
+    error.value = t('notes.errorFetchNote');
+    toast.error(t('notes.errorFetchNote'));
   } finally {
     loading.value = false;
   }
@@ -236,11 +243,11 @@ const saveNote = async () => {
     originalNote.title = res.data.title;
     originalNote.content = res.data.content || "";
     isChanged.value = false;
-    toast.success("Note saved successfully!");
+    toast.success(t('notes.toastSaved'));
   } catch (err) {
     console.error(err);
-    error.value = "Failed to save note.";
-    toast.error("Failed to save note.");
+    error.value = t('notes.toastSaveFailed');
+    toast.error(t('notes.toastSaveFailed'));
   } finally {
     saving.value = false;
   }
@@ -268,9 +275,9 @@ async function addOrUpdateCollaborator() {
     });
     collaborators.value = normalizeCollaborators(res.data || []);
     inviteEmail.value = "";
-    toast.success('Collaborator updated');
+    toast.success(t('notes.toastCollaboratorUpdated'));
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Failed to invite/update');
+    toast.error(err?.response?.data?.message || t('notes.toastInviteFailed'));
   }
 }
 
@@ -280,9 +287,9 @@ async function onChangePermission(c, perm) {
       email: c.user.email, permission: perm
     });
     collaborators.value = normalizeCollaborators(res.data || []);
-    toast.success('Permission updated');
+    toast.success(t('notes.toastPermissionUpdated'));
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Failed to update permission');
+    toast.error(err?.response?.data?.message || t('notes.toastPermissionFailed'));
   }
 }
 
@@ -290,9 +297,9 @@ async function removeCollaborator(userId) {
   try {
     await api.delete(`/notes/${route.params.id}/collaborators/${userId}`);
     collaborators.value = collaborators.value.filter(c => normId(c.user) !== String(userId));
-    toast.success('Collaborator removed');
+    toast.success(t('notes.toastCollabRemoved'));
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Failed to remove');
+    toast.error(err?.response?.data?.message || t('notes.toastRemoveFailed'));
   }
 }
 
@@ -385,7 +392,7 @@ async function downloadExport(ext) {
     link.remove()
     setTimeout(() => URL.revokeObjectURL(link.href), 2000)
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Failed to export')
+    toast.error(err?.response?.data?.message || t('notes.failedExport'))
   }
 }
 

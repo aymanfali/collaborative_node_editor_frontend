@@ -4,6 +4,7 @@ import router from "./router";
 import "./assets/main.css";
 import Toast, { POSITION } from "vue-toastification";
 import "vue-toastification/dist/index.css";
+import i18n from "./i18n";
 
 const options = {
   position: POSITION.TOP_RIGHT,
@@ -38,5 +39,6 @@ const options = {
 const app = createApp(App);
 
 app.use(router);
+app.use(i18n);
 app.use(Toast, options);
 app.mount("#app");

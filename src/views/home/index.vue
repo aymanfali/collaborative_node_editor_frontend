@@ -6,16 +6,13 @@
             <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div class="my-2">
                     <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight">
-                        Collaborative notes for teams and individuals</h1>
-                    <p class="mt-4 text-lg text-slate-600 dark:text-slate-300">Create, edit and collaborate in
-                        real-time. Share notes with teammates, track updates, and keep everything in sync across
-                        devices.</p>
+                        {{ $t('home.heroTitle') }}</h1>
+                    <p class="mt-4 text-lg text-slate-600 dark:text-slate-300">{{ $t('home.heroSubtitle') }}</p>
 
                     <div class="my-10 flex gap-3">
                         <router-link to="/register"
                             class="inline-flex items-center px-5 py-3 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700">
-                            <FontAwesomeIcon class="me-3" :icon="faBolt" />Get
-                            started
+                            <FontAwesomeIcon class="me-3" :icon="faBolt" />{{ $t('home.getStarted') }}
                         </router-link>
                     </div>
 
@@ -26,8 +23,8 @@
                                 <FontAwesomeIcon :icon="faArrowsRotate" />
                             </div>
                             <div>
-                                <div class="font-medium">Real-time sync</div>
-                                <div class="text-xs">Everyone sees edits instantly.</div>
+                                <div class="font-medium">{{ $t('home.features.syncTitle') }}</div>
+                                <div class="text-xs">{{ $t('home.features.syncDesc') }}</div>
                             </div>
                         </div>
                         <div class="sm:flex items-start gap-3">
@@ -36,8 +33,8 @@
                                 <FontAwesomeIcon :icon="faShare" />
                             </div>
                             <div>
-                                <div class="font-medium">Shareable Notes</div>
-                                <div class="text-xs">Invite teammates in seconds.</div>
+                                <div class="font-medium">{{ $t('home.features.shareTitle') }}</div>
+                                <div class="text-xs">{{ $t('home.features.shareDesc') }}</div>
                             </div>
                         </div>
                         <div class="sm:flex items-start gap-3">
@@ -46,8 +43,8 @@
                                 <FontAwesomeIcon :icon="faLock" />
                             </div>
                             <div>
-                                <div class="font-medium">Private by default</div>
-                                <div class="text-xs">Secure storage and auth.</div>
+                                <div class="font-medium">{{ $t('home.features.privateTitle') }}</div>
+                                <div class="text-xs">{{ $t('home.features.privateDesc') }}</div>
                             </div>
                         </div>
                         <div class="sm:flex items-start gap-3">
@@ -56,8 +53,8 @@
                                 <FontAwesomeIcon :icon="faHand" />
                             </div>
                             <div>
-                                <div class="font-medium">Access controls</div>
-                                <div class="text-xs">Manage permissions easily.</div>
+                                <div class="font-medium">{{ $t('home.features.accessTitle') }}</div>
+                                <div class="text-xs">{{ $t('home.features.accessDesc') }}</div>
                             </div>
                         </div>
                     </div>
@@ -78,10 +75,10 @@
 
             <!-- How it works (modern cards) -->
             <section>
-                <h2 class="text-2xl font-semibold text-slate-800 dark:text-white text-center mb-2">How it works</h2>
-                <p class="text-md text-slate-500 dark:text-slate-400 text-center mb-6">Three simple steps to get your
-                    team collaborating quickly. Each step includes an interactive preview so you know what to expect.
-                </p>
+                <h2 class="text-2xl font-semibold text-slate-800 dark:text-white text-center mb-2">{{
+                    $t('home.howItWorksTitle') }}</h2>
+                <p class="text-md text-slate-500 dark:text-slate-400 text-center mb-6">{{ $t('home.howItWorksSubtitle')
+                    }}</p>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Step 1 -->
@@ -95,10 +92,11 @@
                                 </div>
                             </div>
                             <div>
-                                <div class="text-xs text-indigo-600 font-semibold">Step 1</div>
-                                <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">Create a note</h3>
-                                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">Open the editor and start
-                                    writing — markdown support, attachments, and rich formatting included.</p>
+                                <div class="text-xs text-indigo-600 font-semibold">{{ $t('home.step1.badge') }}</div>
+                                <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">{{ $t('home.step1.title') }}
+                                </h3>
+                                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">{{ $t('home.step1.desc') }}
+                                </p>
                             </div>
                         </div>
                     </article>
@@ -114,10 +112,10 @@
                                 </div>
                             </div>
                             <div>
-                                <div class="text-xs text-emerald-600 font-semibold">Step 2</div>
-                                <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">Invite collaborators</h3>
-                                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">Share a link or invite
-                                    teammates by email. Manage permissions per-note so everyone has the right access.
+                                <div class="text-xs text-emerald-600 font-semibold">{{ $t('home.step2.badge') }}</div>
+                                <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">{{ $t('home.step2.title') }}
+                                </h3>
+                                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">{{ $t('home.step2.desc') }}
                                 </p>
                             </div>
                         </div>
@@ -134,10 +132,11 @@
                                 </div>
                             </div>
                             <div>
-                                <div class="text-xs text-amber-600 font-semibold">Step 3</div>
-                                <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">Stay in sync</h3>
-                                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">Edits are propagated in
-                                    real-time so collaborators always see the latest version without conflicts.</p>
+                                <div class="text-xs text-amber-600 font-semibold">{{ $t('home.step3.badge') }}</div>
+                                <h3 class="text-lg font-semibold mt-1 dark:text-slate-200">{{ $t('home.step3.title') }}
+                                </h3>
+                                <p class="text-md text-slate-500 dark:text-slate-400 mt-2">{{ $t('home.step3.desc') }}
+                                </p>
                             </div>
                         </div>
                     </article>
@@ -149,11 +148,12 @@
             <!-- Testimonials & Live stats -->
             <section>
                 <div class="lg:col-span-2 space-y-4">
-                    <h2 class="text-2xl font-semibold text-slate-800 dark:text-white text-center">What customers say
+                    <h2 class="text-2xl font-semibold text-slate-800 dark:text-white text-center">{{
+                        $t('home.testimonialsTitle') }}
                     </h2>
 
                     <div class="flex items-center justify-center">
-                        <Swiper ref="testimonialsSwiper" class="mt-3 w-full" :modules="[Autoplay, Pagination]"
+                        <Swiper ref="testimonialsSwiper" :key="locale" class="mt-3 w-full" :modules="[Autoplay, Pagination]"
                             :autoplay="{ delay: 4000 }" :loop="true" :pagination="paginationOptions">
                             <SwiperSlide v-for="t in testimonials" :key="t.id">
                                 <div class="px-4">
@@ -188,20 +188,20 @@
 
             <hr class="border-slate-400/20">
 
-            <!-- CTA Banner -->
+            <!-- CTA -->
             <section class="rounded-xl p-6 bg-indigo-600 text-white">
                 <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                     <div class="flex gap-5 items-center">
                         <FontAwesomeIcon class="me-3" :icon="faBolt" size="2x" />
                         <div>
-                            <h3 class="text-xl font-semibold">Ready to collaborate?</h3>
-                            <p class="text-md opacity-90">Get started for free — no credit card required.</p>
+                            <h3 class="text-xl font-semibold">{{ $t('about.ctaTryTitle') }}</h3>
+                            <p class="text-md opacity-90">{{ $t('about.ctaSubtitle') }}</p>
                         </div>
                     </div>
                     <div class="flex gap-3">
                         <router-link to="/register"
-                            class="px-4 py-2 bg-white text-indigo-600 rounded-md font-medium">Get
-                            started</router-link>
+                            class="px-4 py-2 bg-white text-indigo-600 rounded-md font-medium">
+                            {{ $t('home.getStarted') }}</router-link>
                     </div>
                 </div>
             </section>
@@ -214,7 +214,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import NotesHeader from '@/components/NotesHeader.vue'
 import NotesFooter from '@/components/NotesFooter.vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -224,12 +224,24 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Autoplay, Pagination } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
+import { useI18n } from 'vue-i18n'
 
-const testimonials = ref([
+const { tm, locale } = useI18n()
+
+// Fallback testimonials if i18n does not provide structured testimonials
+const defaultTestimonials = [
     { id: 1, name: 'Alex Johnson', title: 'Product Manager', quote: 'This app made our team much more productive.' },
     { id: 2, name: 'Maria Gomez', title: 'Designer', quote: 'Beautiful editor and great collaboration features.' },
     { id: 3, name: 'Chen Wei', title: 'Developer', quote: 'Fast, reliable, and easy to integrate into our workflow.' }
-])
+]
+
+// Pull testimonials from translations if available (expects array under home.testimonials)
+const testimonials = computed(() => {
+    const arr = tm ? tm('home.testimonials') : null
+    // Ensure we always return an array of objects with the expected shape
+    if (Array.isArray(arr) && arr.length) return arr
+    return defaultTestimonials
+})
 
 // reference to swiper instance (if needed later)
 const testimonialsSwiper = ref(null)
