@@ -1,11 +1,13 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import ThemeToggle from '../ThemeToggle.vue';
+import LanguageSelect from '@/components/LanguageSelect.vue';
 import { onMounted, ref, computed, onBeforeUnmount } from 'vue';
 import api from '@/services/api.js';
 import { useToast } from 'vue-toastification';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faArrowRightFromBracket, faCopyright, faGlobe, faUser } from '@fortawesome/free-solid-svg-icons';
+import { useI18n } from 'vue-i18n';
 
 const router = useRouter()
 const user = ref({})
@@ -13,6 +15,7 @@ const isAccountListOpen = ref(false)
 const avatarContainer = ref(null)
 const isProfileModalOpen = ref(false)
 const toast = useToast()
+const { t } = useI18n()
 
 const emit = defineEmits(['toggle-nav', 'close'])
 
@@ -94,7 +97,7 @@ const handleLogout = async () => {
     }
     localStorage.removeItem('activeUser')
     router.push('/login')
-    toast.success("Logged out successfully!")
+    toast.success(t('toast.loggedOut'))
 }
 
 </script>
@@ -116,12 +119,13 @@ const handleLogout = async () => {
             </div>
         </div>
         <div class="right flex items-center gap-2.5 mt-3 sm:mt-0">
+            <LanguageSelect size="sm" />
             <ThemeToggle />
             <router-link to="/"
                 class="m-2 cursor-pointer flex items-center rounded-md px-3 py-2 bg-white/10 hover:bg-white/20 text-white"
-                title="Visit Website">
+                :title="t('common.visitWebsite')">
                 <FontAwesomeIcon class="md:me-3" :icon="faGlobe" />
-                <span class="hidden md:block">Visit Website</span>
+                <span class="hidden md:block">{{ t('common.visitWebsite') }}</span>
             </router-link>
             <div class="avatar flex items-center gap-2 relative" ref="avatarContainer">
                 <div v-if="user.avatar" class="w-8 h-8 rounded-full overflow-hidden cursor-pointer"
@@ -134,20 +138,28 @@ const handleLogout = async () => {
                     {{ userInitial }}
                 </div>
                 <span class="cursor-pointer hidden sm:inline-block" @click.stop="toggleAccountList">{{ user.name }}</span>
-                <div class="backdrop-blur bg-white/10 dark:text-white text-slate-800 p-1 rounded-md absolute top-full right-0 mt-2 shadow-lg w-44 border border-white/10"
+                <div class="account-menu backdrop-blur bg-white/10 dark:text-white text-slate-800 p-1 rounded-md absolute top-full mt-2 shadow-lg w-44 border border-white/10 max-w-[90vw]"
                     v-if="isAccountListOpen">
                     <button @click="goProfile"
                         class="flex justify-start items-center w-full hover:bg-slate-800/10 dark:hover:bg-white/10 p-2 cursor-pointer rounded-md">
                         <FontAwesomeIcon class="me-3" :icon="faUser" />
-                        <span>Profile</span>
+                        <span>{{ t('profile.title') }}</span>
                     </button>
                     <button @click="handleLogout"
                         class="flex justify-start items-center w-full text-red-300 hover:bg-slate-800/10 dark:hover:bg-white/10 p-2 cursor-pointer rounded-md">
                         <FontAwesomeIcon class="me-3" :icon="faArrowRightFromBracket" />
-                        <span>Logout</span>
+                        <span>{{ t('nav.logout') }}</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 </template>
+
+<style scoped>
+/* Anchor to inline end so it follows LTR/RTL automatically */
+.account-menu {
+  inset-inline-end: 0;
+  inset-inline-start: auto;
+}
+</style>

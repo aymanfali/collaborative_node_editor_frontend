@@ -5,23 +5,23 @@
 
             <div class="relative w-full max-w-lg mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden">
                 <header class="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
-                    <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">{{ title }}</h3>
+                    <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">{{ title || $t('confirm.deleteNoteTitle') }}</h3>
                 </header>
 
                 <section class="px-6 py-4">
-                    <p class="text-sm text-slate-600 dark:text-slate-300">{{ message }}</p>
+                    <p class="text-sm text-slate-600 dark:text-slate-300">{{ message || $t('confirm.deleteConfirmNote', { title: '' }) }}</p>
                     <slot name="body" />
                 </section>
 
                 <footer class="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-3">
                     <button @click="onCancel"
                         class="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm">
-                        {{ cancelText }}
+                        {{ cancelText || $t('confirm.cancel') }}
                     </button>
 
                     <button @click="onConfirm"
                         :class="['inline-flex items-center px-4 py-2 rounded-md text-sm font-medium', destructive ? 'bg-rose-600 text-white hover:bg-rose-700' : 'bg-indigo-600 text-white hover:bg-indigo-700']">
-                        {{ confirmText }}
+                        {{ confirmText || $t('confirm.confirm') }}
                     </button>
                 </footer>
             </div>

@@ -10,33 +10,35 @@
       <FontAwesomeIcon class="w-8 h-8 sm:w-10 sm:h-10 text-white/90" :icon="faCopyright" size="2x" />
       <router-link to="/" class="flex flex-col gap-1">
         <h2 class="text-base sm:text-lg font-semibold hidden sm:block">{{ appName }}</h2>
-        <p class="text-sm text-white/70 hidden sm:block">Your personal Real-time Note</p>
+        <p class="text-sm text-white/70 hidden sm:block">{{ $t('tagline') }}</p>
       </router-link>
 
       <!-- Desktop nav -->
-      <nav class="hidden md:flex items-center gap-3 md:ml-6">
+      <nav class="hidden md:flex items-center gap-3 md:me-6">
         <router-link to="/" class="relative px-3 py-1 rounded-full text-md transition-colors"
           :class="isActive('/') ? 'bg-white/10 text-white ring-1 ring-white/20' : 'text-white/80 hover:bg-white/5'">
-          Home
+          {{ $t('nav.home') }}
         </router-link>
         <router-link to="/notes" class="relative px-3 py-1 rounded-full text-md transition-colors"
           :class="isActive('/notes') ? 'bg-white/10 text-white ring-1 ring-white/20' : 'text-white/80 hover:bg-white/5'">
-          Notes
+          {{ $t('nav.notes') }}
         </router-link>
         <router-link to="/about" class="relative px-3 py-1 rounded-full text-md transition-colors"
           :class="isActive('/about') ? 'bg-white/10 text-white ring-1 ring-white/20' : 'text-white/80 hover:bg-white/5'">
-          About
+          {{ $t('nav.about') }}
         </router-link>
       </nav>
     </div>
 
     <!-- Right: user/account -->
     <div class="flex items-center gap-3">
+      <!-- Language Switcher -->
+      <LanguageSelect size="sm" />
       <ThemeToggle />
       <template v-if="isLoggedIn">
         <button v-if="isAdmin" @click="goDashboard"
           class="flex items-center px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm">
-          <FontAwesomeIcon class="sm:mr-3" :icon="faGaugeHigh" /><span class="hidden sm:block">Dashboard</span>
+          <FontAwesomeIcon class="sm:me-3" :icon="faGaugeHigh" /><span class="hidden sm:block">{{ $t('nav.dashboard') }}</span>
         </button>
 
         <div class="flex items-center gap-2 relative">
@@ -56,13 +58,13 @@
             aria-expanded="true">
             <button @click="goProfile"
               class="flex justify-start items-center w-full hover:bg-slate-800/10 dark:hover:bg-white/10 p-2 cursor-pointer rounded-md">
-              <FontAwesomeIcon class="mr-3" :icon="faUser" />
-              <span>Profile</span>
+              <FontAwesomeIcon class="me-3" :icon="faUser" />
+              <span>{{ $t('nav.profile') }}</span>
             </button>
             <button @click="handleLogout"
               class="flex justify-start items-center w-full text-red-300 hover:bg-slate-800/10 dark:hover:bg-white/10 p-2 cursor-pointer rounded-md">
-              <FontAwesomeIcon class="mr-3" :icon="faArrowRightFromBracket" />
-              <span>Logout</span>
+              <FontAwesomeIcon class="me-3" :icon="faArrowRightFromBracket" />
+              <span>{{ $t('nav.logout') }}</span>
             </button>
           </div>
         </div>
@@ -71,11 +73,11 @@
       <template v-else>
         <button @click="goLogin"
           class="flex items-center px-3 py-2 rounded-md bg-white text-slate-900 hover:bg-slate-100 text-sm">
-          <FontAwesomeIcon class="sm:me-3" :icon="faArrowRightToBracket" /><span class="hidden sm:block">Login</span>
+          <FontAwesomeIcon class="sm:me-3" :icon="faArrowRightToBracket" /><span class="hidden sm:block">{{ $t('nav.login') }}</span>
         </button>
         <button @click="goRegister"
           class="px-3 py-2 rounded-md border border-white/30 hover:bg-white/10 text-white text-sm hidden sm:block">
-          <FontAwesomeIcon class="sm:me-3" :icon="faUserPlus" />Register
+          <FontAwesomeIcon class="sm:me-3" :icon="faUserPlus" />{{ $t('nav.register') }}
         </button>
       </template>
     </div>
@@ -96,34 +98,34 @@
           </div>
           <nav class="flex flex-col gap-3 mt-10">
             <router-link to="/" class="px-3 py-2 rounded hover:bg-white/10" @click="navOpen = false">
-              <FontAwesomeIcon class="me-3" :icon="faHome" />Home
+              <FontAwesomeIcon class="me-3" :icon="faHome" />{{ $t('nav.home') }}
             </router-link>
             <router-link to="/notes" class="px-3 py-2 rounded hover:bg-white/10" @click="navOpen = false">
-              <FontAwesomeIcon class="me-3" :icon="faNoteSticky" />Notes
+              <FontAwesomeIcon class="me-3" :icon="faNoteSticky" />{{ $t('nav.notes') }}
             </router-link>
             <router-link to="/about" class="px-3 py-2 rounded hover:bg-white/10" @click="navOpen = false">
-              <FontAwesomeIcon class="me-3" :icon="faCircleInfo" />About
+              <FontAwesomeIcon class="me-3" :icon="faCircleInfo" />{{ $t('nav.about') }}
             </router-link>
             <div v-if="isLoggedIn" class="flex flex-col gap-y-3">
               <router-link v-if="isAdmin" to="/dashboard" class="px-3 py-2 rounded hover:bg-white/10"
                 @click="navOpen = false">
-                <FontAwesomeIcon class="mr-3" :icon="faGaugeHigh" />Dashboard
+                <FontAwesomeIcon class="me-3" :icon="faGaugeHigh" />{{ $t('nav.dashboard') }}
               </router-link>
               <router-link to="/profile" class="px-3 py-2 rounded hover:bg-white/10" @click="navOpen = false">
-                <FontAwesomeIcon class="mr-3" :icon="faUser" />Profile
+                <FontAwesomeIcon class="me-3" :icon="faUser" />{{ $t('nav.profile') }}
               </router-link>
               <button @click="handleLogout" class="px-3 py-2 rounded hover:bg-white/10 text-red-300 w-full text-left">
-                <FontAwesomeIcon class="mr-3" :icon="faArrowRightFromBracket" />Logout
+                <FontAwesomeIcon class="me-3" :icon="faArrowRightFromBracket" />{{ $t('nav.logout') }}
               </button>
             </div>
             <div v-else class="flex flex-col gap-2">
               <button @click="goLogin"
                 class="flex items-center px-3 py-2 rounded-md bg-white text-slate-900 hover:bg-slate-100 text-sm">
-                <FontAwesomeIcon class="me-3" :icon="faArrowRightToBracket" />Login
+                <FontAwesomeIcon class="me-3" :icon="faArrowRightToBracket" />{{ $t('nav.login') }}
               </button>
               <button @click="goRegister"
                 class="flex px-3 py-2 rounded-md border border-white/30 hover:bg-white/10 text-white text-sm">
-                <FontAwesomeIcon class="me-3" :icon="faUserPlus" />Register
+                <FontAwesomeIcon class="me-3" :icon="faUserPlus" />{{ $t('nav.register') }}
               </button>
             </div>
           </nav>
@@ -142,10 +144,13 @@ import { useToast } from 'vue-toastification';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faArrowRightFromBracket, faArrowRightToBracket, faCopyright, faGaugeHigh, faHome, faNoteSticky, faUser, faUserPlus, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import ThemeToggle from '@/components/ThemeToggle.vue';
+import { useI18n } from 'vue-i18n';
+import LanguageSelect from '@/components/LanguageSelect.vue';
 
 const router = useRouter();
 const route = useRoute();
 const toast = useToast();
+const { t } = useI18n();
 
 // UI state
 const navOpen = ref(false);
@@ -215,11 +220,13 @@ async function handleLogout() {
     localStorage.removeItem('refreshToken');
     isLoggedIn.value = false;
     isAdmin.value = false;
-    toast.success('Logged out successfully');
+    toast.success(t('toast.loggedOut'));
     router.push('/');
     window.location.reload();
   }
 }
+
+
 </script>
 
 <style>
@@ -243,4 +250,9 @@ async function handleLogout() {
 .slide-leave-to {
   transform: translateX(-100%);
 }
+
+/* RTL adjustments */
+html[dir='rtl'] .slide-enter-from { transform: translateX(100%); }
+html[dir='rtl'] .slide-leave-to { transform: translateX(100%); }
+html[dir='rtl'] .account-dropdown { left: 0; right: auto; }
 </style>

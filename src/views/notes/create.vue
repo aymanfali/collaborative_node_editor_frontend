@@ -1,16 +1,16 @@
 <template>
     <NotesLayout>
         <section>
-            <NotesHero title="Create New Note" subtitle="Start a new idea and collaborate later">
+            <NotesHero :title="$t('notes.createHeroTitle')" :subtitle="$t('notes.createHeroSubtitle')">
                 <template #actions>
                     <button @click="saveNote"
                         class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow disabled:opacity-60"
                         :disabled="!title.trim() || loading">
-                        <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" /> {{ loading ? 'Saving…' : 'Save' }}
+                        <FontAwesomeIcon class="me-3" :icon="faFloppyDisk" /> {{ loading ? $t('notes.saving') : $t('notes.save') }}
                     </button>
                     <button @click="goBack"
                         class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow">
-                        <FontAwesomeIcon class="me-3" :icon="faArrowLeft" /> Back to Notes
+                        <FontAwesomeIcon class="me-3" :icon="faArrowLeft" /> {{ $t('notes.backToNotes') }}
                     </button>
                 </template>
             </NotesHero>
@@ -22,7 +22,7 @@
                         v-model="title"
                         @input="touched.title = true"
                         type="text"
-                        placeholder="Note Title"
+                        :placeholder="$t('notes.titlePlaceholder')"
                         :aria-invalid="!!titleError || undefined"
                         :aria-describedby="titleError ? 'note-title-error' : undefined"
                         :class="[

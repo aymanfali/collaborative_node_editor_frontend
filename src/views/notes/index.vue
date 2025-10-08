@@ -1,11 +1,11 @@
 <template>
     <NotesLayout>
         <section>
-            <NotesHero title="Your Notes" subtitle="Create, edit and collaborate">
+            <NotesHero :title="$t('notes.heroListTitle')" :subtitle="$t('notes.heroListSubtitle')">
                 <template #actions>
                     <button @click="goToCreate"
                         class="inline-flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white text-sm shadow">
-                        <FontAwesomeIcon class="me-3" :icon="faPlus" />Create New Note
+                        <FontAwesomeIcon class="me-3" :icon="faPlus" />{{ $t('notes.createNew') }}
                     </button>
                 </template>
             </NotesHero>
@@ -13,14 +13,13 @@
             <div class="flex items-center gap-3 mb-4 mt-12">
                 <FontAwesomeIcon class="dark:text-white" :icon="faMagnifyingGlass" />
                 <input v-model="search" @input="onSearchInput" type="text"
-                    placeholder="Search notes (title and content)"
+                    :placeholder="$t('notes.searchPlaceholder')"
                     class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full" />
             </div>
 
-            <div v-if="loading" class="text-slate-600 dark:text-slate-300">Loading notes...</div>
+            <div v-if="loading" class="text-slate-600 dark:text-slate-300">{{ $t('notes.loadingList') }}</div>
             <div v-else-if="error" class="text-rose-600">{{ error }}</div>
-            <div v-else-if="notes.length === 0" class="text-slate-500 dark:text-slate-400 italic">No notes yet. Create
-                your first one above!</div>
+            <div v-else-if="notes.length === 0" class="text-slate-500 dark:text-slate-400 italic">{{ $t('notes.emptyList') }}</div>
 
             <ul class="mt-12 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 <li v-for="note in notes" :key="note._id"
@@ -33,12 +32,10 @@
                                 {{ note.title }}
                             </router-link>
                             <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                <FontAwesomeIcon class="me-3" :icon="faUser" /> {{ note.owner?.name || note.owner?.email
-                                ||
-                                'Unknown' }}
+                                <FontAwesomeIcon class="me-3" :icon="faUser" /> {{ note.owner?.name || note.owner?.email || $t('common.unknown') }}
                             </div>
                             <div class="text-xs my-2 text-slate-500 dark:text-slate-400">
-                                Last updated: {{ formatDateTime(note.updatedAt) }}
+                                {{ $t('notes.listLastUpdated', { date: formatDateTime(note.updatedAt) }) }}
                             </div>
                         </div>
                     </div>
@@ -49,9 +46,9 @@
                 </li>
             </ul>
 
-            <ConfirmModal v-model:show="isConfirmOpen" title="Delete note"
-                message="Are you sure you want to permanently delete this note? This action cannot be undone."
-                confirmText="Delete" cancelText="Cancel" destructive @confirm="performDelete" />
+            <ConfirmModal v-model:show="isConfirmOpen" :title="$t('notes.deleteTitle')"
+                :message="$t('notes.deleteMessage')"
+                :confirmText="$t('confirm.confirm')" :cancelText="$t('confirm.cancel')" destructive @confirm="performDelete" />
         </section>
     </NotesLayout>
 </template>
@@ -60,6 +57,7 @@
 import NotesLayout from '@/layouts/NotesLayout.vue';
 import NotesHero from '@/components/NotesHero.vue';
 import { ref, onMounted } from "vue";
+import { useI18n } from 'vue-i18n'
 import { useRouter } from "vue-router";
 import api from "../../services/api";
 import { useToast } from "vue-toastification";
@@ -68,6 +66,7 @@ import { faMagnifyingGlass, faNoteSticky, faPlus, faTrash, faUser } from '@forta
 import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const notes = ref([]);
+const { t } = useI18n()
 const loading = ref(true);
 const error = ref(null);
 const router = useRouter();
@@ -91,8 +90,8 @@ const fetchNotes = async (q = '') => {
         notes.value = res.data;
         error.value = null;
     } catch (err) {
-        error.value = "Failed to fetch notes.";
-        toast.error("Failed to fetch notes.");
+        error.value = t('notes.toastFetchFailed');
+        toast.error(t('notes.toastFetchFailed'));
         console.error(err);
     } finally {
         loading.value = false;
@@ -121,10 +120,10 @@ const performDelete = async () => {
     notes.value = notes.value.filter((n) => n._id !== id);
     try {
         await api.delete(`/notes/${id}`);
-        toast.success("Note deleted successfully!");
+        toast.success(t('notes.toastDeleted'));
     } catch (err) {
         notes.value = oldNotes;
-        toast.error("Failed to delete note.");
+        toast.error(t('notes.toastDeleteFailed'));
         console.error("Error deleting note:", err);
     } finally {
         noteToDelete.value = null;

@@ -3,8 +3,8 @@
         <!-- Top gradient banner -->
         <div class="bg-gradient-to-r from-slate-900 to-blue-900 py-10">
             <div class="max-w-3xl mx-auto px-6">
-                <h1 class="text-3xl font-semibold text-white">Welcome back</h1>
-                <p class="text-white/70 mt-1">Sign in to access your notes and collaborate.</p>
+                <h1 class="text-3xl font-semibold text-white">{{ $t('auth.loginBannerTitle') }}</h1>
+                <p class="text-white/70 mt-1">{{ $t('auth.loginBannerSubtitle') }}</p>
             </div>
         </div>
 
@@ -12,18 +12,18 @@
         <div class="max-w-md mx-auto -mt-8 px-6 pb-10">
             <div class="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-6 rounded-xl shadow-sm">
                 <div class="text-center mb-4">
-                    <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Sign in</h2>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Use your credentials below</p>
+                    <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">{{ $t('auth.signIn') }}</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">{{ $t('auth.useCredentials') }}</p>
                 </div>
 
             <form @submit.prevent="handleLogin" novalidate>
                 <div class="mb-3">
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">{{ $t('auth.email') }}</label>
                     <input
                         type="email"
                         v-model="email"
                         @input="touched.email = true"
-                        placeholder="you@example.com"
+                        :placeholder="$t('auth.emailPlaceholder')"
                         required autocomplete="email"
                         :aria-invalid="!!emailError || undefined"
                         :aria-describedby="emailError ? 'login-email-error' : undefined"
@@ -36,23 +36,23 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">{{ $t('auth.password') }}</label>
                     <div class="relative">
                         <input :type="showPassword ? 'text' : 'password'"
                             v-model="password"
                             @input="touched.password = true"
-                            placeholder="Your password"
+                            :placeholder="$t('auth.passwordPlaceholder')"
                             required autocomplete="current-password"
                             :aria-invalid="!!passwordError || undefined"
                             :aria-describedby="passwordError ? 'login-password-error' : undefined"
                             :class="[
-                              'mt-1 w-full bg-white dark:bg-gray-800 border rounded px-3 pr-10 py-2 focus:outline-none focus:ring-2 text-slate-700 dark:text-slate-200',
+                              'mt-1 w-full bg-white dark:bg-gray-800 border rounded !px-3 dir-pad-end-10 py-2 focus:outline-none focus:ring-2 text-slate-700 dark:text-slate-200',
                               passwordError ? 'border-rose-400 focus:ring-rose-400' : 'border-gray-300 dark:border-gray-700 focus:ring-indigo-500'
                             ]"
                             aria-label="Password" />
                         <button type="button" @click="toggleShowPassword"
-                            class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                            :aria-pressed="showPassword" aria-label="Toggle password visibility">
+                            class="absolute dir-abs-end top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                            :aria-pressed="showPassword" :aria-label="$t('auth.password')">
                             <FontAwesomeIcon v-if="showPassword" :icon="faEyeSlash" />
                             <FontAwesomeIcon v-else :icon="faEye" />
                         </button>
@@ -70,7 +70,7 @@
                         <path class="opacity-75" fill="currentColor"
                             d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a 8 8 0 01-8-8z"></path>
                     </svg>
-                    <span>{{ loading ? 'Signing in...' : 'Sign in' }}</span>
+                    <span>{{ loading ? $t('auth.signingIn') : $t('auth.signIn') }}</span>
                 </button>
             </form>
 
@@ -78,13 +78,13 @@
                 <button @click="googleLogin"
                     class="w-full border border-gray-300 dark:border-gray-700 rounded-md py-2 flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 text-slate-700 dark:text-slate-200">
                     <FontAwesomeIcon :icon="faGoogle" />
-                    <span>Continue with Google</span>
+                    <span>{{ $t('auth.continueWithGoogle') }}</span>
                 </button>
             </div>
 
             <p class="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
-                Don't have an account?
-                <router-link to="/register" class="text-indigo-600 dark:text-indigo-400 font-medium">Create one</router-link>
+                {{ $t('auth.noAccount') }}
+                <router-link to="/register" class="text-indigo-600 dark:text-indigo-400 font-medium">{{ $t('auth.createOne') }}</router-link>
             </p>
         </div>
     </div>

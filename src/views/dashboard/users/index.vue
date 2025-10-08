@@ -62,23 +62,30 @@ async function confirmDelete() {
 
 <template>
   <section>
-    <h1 class="text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-4">Users</h1>
-    <div v-if="loading">Loading...</div>
+    <h1 class="text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-4">{{ $t('dashboard.manageUsers') }}</h1>
+    <div v-if="loading">{{ $t('common.loading') }}</div>
     <div v-else-if="error" class="text-red-500">{{ error }}</div>
-    <Table v-else :headers="['Avatar','Name','Email','Provider','Role','Date']" :items="users" :filterableColumns="[
-        { key: 'name', label: 'Name' },
-        { key: 'email', label: 'Email' },
-        { key: 'provider', label: 'Provider' },
-        { key: 'role', label: 'Role' },
-        { key: 'date', label: 'Date', type: 'date' },
+    <Table v-else :headers="[
+        { key: 'avatar', label: $t('table.headers.avatar') },
+        { key: 'name', label: $t('table.headers.name') },
+        { key: 'email', label: $t('table.headers.email') },
+        { key: 'provider', label: $t('table.headers.provider') },
+        { key: 'role', label: $t('table.headers.role') },
+        { key: 'date', label: $t('table.headers.date') }
+      ]" :items="users" :filterableColumns="[
+        { key: 'name', label: $t('table.headers.name') },
+        { key: 'email', label: $t('table.headers.email') },
+        { key: 'provider', label: $t('table.headers.provider') },
+        { key: 'role', label: $t('table.headers.role') },
+        { key: 'date', label: $t('table.headers.date'), type: 'date' }
       ]" :allowEdit="false" :showDelete="true" :showView="false" :showExport="false" @view="handleView" @delete="handleDelete" />
 
     <ConfirmModal
       v-model:show="showConfirm"
-      title="Delete User"
-      :message="`Are you sure you want to delete user ${deletingUser?.name || ''}? This action cannot be undone.`"
-      confirmText="Delete"
-      cancelText="Cancel"
+      :title="$t('confirm.deleteUserTitle')"
+      :message="$t('confirm.deleteConfirmUser', { name: deletingUser?.name || '' })"
+      :confirmText="$t('confirm.confirm')"
+      :cancelText="$t('confirm.cancel')"
       :destructive="true"
       @confirm="confirmDelete"
     />

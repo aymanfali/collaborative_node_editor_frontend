@@ -84,27 +84,32 @@ async function confirmDelete() {
 
 <template>
   <section>
-    <h1 class="text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-4">Notes</h1>
+    <h1 class="text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-4">{{ $t('nav.notes') }}</h1>
     <div class="flex items-center gap-3 mb-4">
       <FontAwesomeIcon class="dark:text-white text-black" :icon="faMagnifyingGlass" />
-      <input v-model="search" @input="onSearchInput" type="text" placeholder="Search notes (title and content)"
+      <input v-model="search" @input="onSearchInput" type="text" :placeholder="$t('placeholders.searchNotes')"
         class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200 py-2 px-3 rounded w-full" />
     </div>
-    <div v-if="loading">Loading...</div>
+    <div v-if="loading">{{ $t('common.loading') }}</div>
     <div v-else-if="error" class="text-red-500">{{ error }}</div>
-    <Table v-else :headers="['Title','Owner','Email','Date']" :items="notes" :filterableColumns="[
-        { key: 'title', label: 'Title' },
-        { key: 'owner', label: 'Owner' },
-        { key: 'email', label: 'Email' },
-        { key: 'date', label: 'Date', type: 'date' },
+    <Table v-else :headers="[
+        { key: 'title', label: $t('table.headers.title') },
+        { key: 'owner', label: $t('table.headers.owner') },
+        { key: 'email', label: $t('table.headers.email') },
+        { key: 'date', label: $t('table.headers.date') }
+      ]" :items="notes" :filterableColumns="[
+        { key: 'title', label: $t('table.headers.title') },
+        { key: 'owner', label: $t('table.headers.owner') },
+        { key: 'email', label: $t('table.headers.email') },
+        { key: 'date', label: $t('table.headers.date'), type: 'date' }
       ]" :allowEdit="false" :showDelete="true" :showView="true" :showExport="true" @view="handleView" @delete="handleDelete" />
 
     <ConfirmModal
       v-model:show="showConfirm"
-      title="Delete Note"
-      :message="`Are you sure you want to delete note ${deletingNote?.title || ''}? This action cannot be undone.`"
-      confirmText="Delete"
-      cancelText="Cancel"
+      :title="$t('confirm.deleteNoteTitle')"
+      :message="$t('confirm.deleteConfirmNote', { title: deletingNote?.title || '' })"
+      :confirmText="$t('confirm.confirm')"
+      :cancelText="$t('confirm.cancel')"
       :destructive="true"
       @confirm="confirmDelete"
     />

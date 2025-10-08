@@ -4,7 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { computed, onMounted, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import api from '@/services/api.js'
 import { faHtml5, faMarkdown } from '@fortawesome/free-brands-svg-icons'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const props = defineProps({
     headers: { type: Array, required: true },
     items: { type: Array, required: true },
@@ -18,6 +20,16 @@ const props = defineProps({
     showDelete: { type: Boolean, default: true },
     showExport: { type: Boolean, default: true },
 })
+
+function headerKey(h) {
+    if (h && typeof h === 'object' && h.key) return String(h.key)
+    return String(h)
+}
+
+function headerLabel(h) {
+    if (h && typeof h === 'object' && h.label) return String(h.label)
+    return String(h)
+}
 
 const emit = defineEmits(['edit', 'delete', 'view'])
 
@@ -163,16 +175,16 @@ function clearFilters() { Object.keys(filters).forEach(k => filters[k] = ''); cu
                         {{ filterConfig.label }}
                     </label>
                     <input v-if="filterConfig.type !== 'date'" type="text" v-model="filters[filterConfig.key]"
-                        @input="handleFilter" :placeholder="`Filter by ${filterConfig.label || filterConfig.key}`"
+                        @input="handleFilter" :placeholder="t('table.labels.filterBy', { label: filterConfig.label || filterConfig.key })"
                         class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 py-2 px-3 rounded w-full shadow-sm">
                     <input v-else type="date" v-model="filters[filterConfig.key]" @input="handleFilter"
-                        :placeholder="`Filter by ${filterConfig.label || filterConfig.key}`"
+                        :placeholder="t('table.labels.filterBy', { label: filterConfig.label || filterConfig.key })"
                         class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 py-2 px-3 rounded w-full shadow-sm">
                 </div>
                 <div class="m-2 flex items-end">
                     <button type="button" @click="clearFilters"
                         class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white shadow">
-                        Clear
+                        {{ t('table.labels.clear') }}
                     </button>
                 </div>
             </form>
@@ -183,11 +195,11 @@ function clearFilters() { Object.keys(filters).forEach(k => filters[k] = ''); cu
                     <tr>
                         <th v-for="(header, index) in headers" :key="`header-${index}`"
                             class="px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider">
-                            {{ header }}
+                            {{ headerLabel(header) }}
                         </th>
                         <th v-if="hasAnyActions"
                             class="px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider">
-                            Actions
+                            {{ t('table.labels.actions') }}
                         </th>
                     </tr>
                 </thead>
@@ -196,30 +208,30 @@ function clearFilters() { Object.keys(filters).forEach(k => filters[k] = ''); cu
                         class="hover:bg-slate-50 dark:hover:bg-gray-800/60">
                         <template v-for="(header, headerIndex) in headers" :key="`cell-${itemIndex}-${headerIndex}`">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700 dark:text-slate-200">
-                                <template v-if="isImage(item[header.toLowerCase()])">
-                                    <img :src="item[header.toLowerCase()]"
+                                <template v-if="isImage(item[headerKey(header).toLowerCase()])">
+                                    <img :src="item[headerKey(header).toLowerCase()]"
                                         class="h-10 w-10 rounded-full object-cover mx-auto" :alt="`${header} image`">
                                 </template>
-                                <template v-else-if="header.toLowerCase().includes('date')">
-                                    <div class="text-center">{{ formatDate(item[header.toLowerCase()]) }}</div>
+                                <template v-else-if="headerKey(header).toLowerCase().includes('date')">
+                                    <div class="text-center">{{ formatDate(item[headerKey(header).toLowerCase()]) }}</div>
                                 </template>
                                 <template v-else>
-                                    {{ item[header.toLowerCase()] }}
+                                    {{ item[headerKey(header).toLowerCase()] }}
                                 </template>
                             </td>
                         </template>
 
                         <td v-if="hasAnyActions" class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                             <button v-if="showView" @click="handleView(item)"
-                                class="mr-3 cursor-pointer text-indigo-600 hover:text-indigo-700" title="View details">
+                                class="mr-3 cursor-pointer text-indigo-600 hover:text-indigo-700" :title="t('table.tooltips.view')">
                                 <FontAwesomeIcon :icon="faEye" />
                             </button>
                             <button v-if="allowEdit && showEdit" @click="handleEdit(item)"
-                                class="mr-3 cursor-pointer text-amber-600 hover:text-amber-700" title="Edit">
+                                class="mr-3 cursor-pointer text-amber-600 hover:text-amber-700" :title="t('table.tooltips.edit')">
                                 <FontAwesomeIcon :icon="faPen" />
                             </button>
                             <button v-if="showDelete" @click="handleDelete(item)"
-                                class="cursor-pointer text-rose-600 hover:text-rose-700" title="Delete">
+                                class="cursor-pointer text-rose-600 hover:text-rose-700" :title="t('table.tooltips.delete')">
                                 <FontAwesomeIcon :icon="faTrash" />
                             </button>
 
@@ -262,7 +274,7 @@ function clearFilters() { Object.keys(filters).forEach(k => filters[k] = ''); cu
                     <tr v-if="filterItems.length === 0">
                         <td :colspan="headers.length + (showActions ? 1 : 0)"
                             class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
-                            No items found
+                            {{ t('table.labels.noItems') }}
                         </td>
                     </tr>
                 </tbody>
@@ -274,21 +286,22 @@ function clearFilters() { Object.keys(filters).forEach(k => filters[k] = ''); cu
                 <button @click="prevPage" :disabled="currentPage === 1"
                     class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 text-sm font-medium rounded-md"
                     :class="currentPage === 1 ? 'bg-gray-100 dark:bg-gray-800 text-gray-400' : 'bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-gray-800'">
-                    Previous
+                    {{ t('table.labels.prev') }}
                 </button>
                 <button @click="nextPage" :disabled="currentPage === totalPages"
-                    class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 text-sm font-medium rounded-md"
+                    class="me-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 text-sm font-medium rounded-md"
                     :class="currentPage === totalPages ? 'bg-gray-100 dark:bg-gray-800 text-gray-400' : 'bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-gray-800'">
-                    Next
+                    {{ t('table.labels.next') }}
                 </button>
             </div>
             <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                     <p class="text-sm text-slate-600 dark:text-slate-300">
-                        Showing <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
-                        to <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filterItems.length)
-                            }}</span>
-                        of <span class="font-medium">{{ filterItems.length }}</span> results
+                        {{ t('table.labels.showing', {
+                            from: (currentPage - 1) * itemsPerPage + 1,
+                            to: Math.min(currentPage * itemsPerPage, filterItems.length),
+                            total: filterItems.length
+                        }) }}
                     </p>
                 </div>
                 <div>
@@ -296,7 +309,7 @@ function clearFilters() { Object.keys(filters).forEach(k => filters[k] = ''); cu
                         <button @click="prevPage" :disabled="currentPage === 1"
                             class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm font-medium"
                             :class="currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-slate-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-gray-800'">
-                            <span class="sr-only">Previous</span>
+                            <span class="sr-only">{{ t('table.labels.prev') }}</span>
                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                 fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd"
@@ -319,7 +332,7 @@ function clearFilters() { Object.keys(filters).forEach(k => filters[k] = ''); cu
                         <button @click="nextPage" :disabled="currentPage === totalPages"
                             class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm font-medium"
                             :class="currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-slate-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-gray-800'">
-                            <span class="sr-only">Next</span>
+                            <span class="sr-only">{{ t('table.labels.next') }}</span>
                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                 fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd"

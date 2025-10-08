@@ -28,7 +28,7 @@ defineProps({
                         'hover:bg-white/5': $route.path !== '/dashboard'
                     }">
                     <FontAwesomeIcon class="me-3" :icon="faHouse" />
-                    <span>Home</span>
+                    <span>{{ $t('sidebar.home') }}</span>
                 </RouterLink>
             </li>
             <li>
@@ -38,7 +38,7 @@ defineProps({
                         'hover:bg-white/5': $route.path !== '/dashboard/users'
                     }">
                     <FontAwesomeIcon class="me-3" :icon="faUser" />
-                    <span>Users</span>
+                    <span>{{ $t('sidebar.users') }}</span>
                 </RouterLink>
             </li>
             <li>
@@ -48,7 +48,7 @@ defineProps({
                         'hover:bg-white/5': $route.path !== '/dashboard/notes'
                     }">
                     <FontAwesomeIcon class="me-3" :icon="faNoteSticky" />
-                    <span>Notes</span>
+                    <span>{{ $t('sidebar.notes') }}</span>
                 </RouterLink>
             </li>
         </ul>
