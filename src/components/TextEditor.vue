@@ -71,8 +71,11 @@ onMounted(() => {
     const socketUrl = isProduction 
       ? import.meta.env.VITE_BACKEND_URL 
       : 'http://localhost:3000';
-      
-    socket = io(socketUrl, {
+    
+    // Ensure the URL doesn't have a trailing slash
+    const cleanUrl = socketUrl.endsWith('/') ? socketUrl.slice(0, -1) : socketUrl;
+    
+    socket = io(cleanUrl, {
       path: "/socket.io/",
       withCredentials: true,
       transports: ['websocket', 'polling'],
@@ -84,8 +87,22 @@ onMounted(() => {
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       // Timeout for connection
-      timeout: 10000
+      timeout: 10000,
+      // Add namespace if needed (empty for default namespace)
+      // namespace: '/',
+      // Force new connection
+      forceNew: true,
+      // Disable auto-connect and connect manually after configuration
+      autoConnect: false
     });
+
+    // Add error handling
+    socket.on('connect_error', (err) => {
+      console.error('Connection error:', err.message);
+    });
+
+    // Connect manually after configuration
+    socket.connect();
 
     // Log connection events for debugging
     socket.on('connect', () => {
