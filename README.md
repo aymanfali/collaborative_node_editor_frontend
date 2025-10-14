@@ -69,10 +69,10 @@ You can reference these in code via `import.meta.env.VITE_*`.
 ## Demo Examples
 
 Home Page
-<img width="1896" height="872" alt="image" src="https://github.com/user-attachments/assets/5159b765-9dbe-4ac7-afa5-934282fa7b08" />
+<img width="1880" height="809" alt="image" src="https://github.com/user-attachments/assets/9efbead0-b3e1-4390-a1b5-99a10b620bb9" />
 
 Dashboard
-<img width="1892" height="596" alt="image" src="https://github.com/user-attachments/assets/61358205-2962-45e4-b9bd-79e533a38855" />
+<img width="1892" height="792" alt="image" src="https://github.com/user-attachments/assets/d59eb1af-477c-41dd-9b1b-0d84d7078660" />
 
 
 ## License
