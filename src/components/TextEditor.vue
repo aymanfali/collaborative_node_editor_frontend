@@ -117,6 +117,18 @@ onMounted(() => {
     });
 });
 
+// Watch for modelValue changes to update the editor content
+watch(() => props.modelValue, (newValue) => {
+    if (quill && newValue !== quill.root.innerHTML) {
+        const selection = quill.getSelection();
+        quill.clipboard.dangerouslyPasteHTML(newValue || '');
+        if (selection) {
+            // Restore selection
+            quill.setSelection(selection.index, selection.length);
+        }
+    }
+}, { immediate: true });
+
 // react to readOnly changes
 watch(() => props.readOnly, (ro) => {
     if (quill) {

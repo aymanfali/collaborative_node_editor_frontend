@@ -44,8 +44,12 @@
 
           <!-- Presence bar -->
           <div class="flex items-center gap-2 mb-2" v-if="presence.length">
-            <span class="inline-flex items-center justify-center rounded-full text-white text-xs w-6 h-6"
-              :style="{ backgroundColor: presenceColor(p) || '#64748b' }" :title="presenceDisplayName(p)">
+            <span 
+              v-for="p in presence" 
+              :key="presenceKey(p)"
+              class="inline-flex items-center justify-center rounded-full text-white text-xs w-6 h-6"
+              :style="{ backgroundColor: presenceColor(p) || '#64748b' }" 
+              :title="presenceDisplayName(p)">
               {{ presenceInitials(p) }}
             </span>
           </div>
