@@ -66,8 +66,39 @@ onMounted(() => {
         quill.clipboard.dangerouslyPasteHTML(props.modelValue);
     }
 
-    // init socket
-    socket = io("http://localhost:3000");
+    // Initialize socket with proper configuration for production
+    const isProduction = import.meta.env.PROD;
+    const socketUrl = isProduction 
+      ? import.meta.env.VITE_BACKEND_URL 
+      : 'http://localhost:3000';
+      
+    socket = io(socketUrl, {
+      path: "/socket.io/",
+      withCredentials: true,
+      transports: ['websocket', 'polling'],
+      // Important for production with proxies
+      secure: isProduction,
+      // Handle reconnection automatically
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      // Timeout for connection
+      timeout: 10000
+    });
+
+    // Log connection events for debugging
+    socket.on('connect', () => {
+      console.log('Socket connected:', socket.id);
+    });
+
+    socket.on('disconnect', (reason) => {
+      console.log('Socket disconnected:', reason);
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+    });
 
     // join room for this note
     socket.emit("join-note", { noteId: String(props.noteId), user: props.user });
